@@ -94,7 +94,7 @@
         .locked-overlay.hidden { display: none; }
         .modal-box { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); width: 100%; max-width: 400px;}
         
-        #folder-lock-overlay { position: absolute; z-index: 50; border-radius: 12px;} /* Specific overlay for Admin Folder Vault */
+        #folder-lock-overlay { position: absolute; z-index: 50; border-radius: 12px;} 
 
         /* --- ADMIN DASHBOARD & SIDEBAR TOOLS --- */
         .admin-stat-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
@@ -171,8 +171,8 @@
                         <span id="slot1-status" style="float: right; font-size: 0.7rem; color: var(--text-muted);">No active key</span>
                         <input type="text" id="slot1-input" placeholder="Custom key..." style="width: 100%; margin-top: 5px;">
                         <div class="key-controls">
-                            <button onclick="generateRandom('slot1-input')" style="flex: 1; font-size: 0.8rem;">Random</button>
-                            <button onclick="createKey(1, 'slot1-input')" class="btn-purple" style="flex: 1; font-size: 0.8rem; padding: 8px;">Create</button>
+                            <button id="btn-rand-1" style="flex: 1; font-size: 0.8rem;">Random</button>
+                            <button id="btn-create-1" class="btn-purple" style="flex: 1; font-size: 0.8rem; padding: 8px;">Create</button>
                         </div>
                     </div>
 
@@ -181,8 +181,8 @@
                         <span id="slot2-status" style="float: right; font-size: 0.7rem; color: var(--text-muted);">No active key</span>
                         <input type="text" id="slot2-input" placeholder="Custom key..." style="width: 100%; margin-top: 5px;">
                         <div class="key-controls">
-                            <button onclick="generateRandom('slot2-input')" style="flex: 1; font-size: 0.8rem;">Random</button>
-                            <button onclick="createKey(2, 'slot2-input')" class="btn-purple" style="flex: 1; font-size: 0.8rem; padding: 8px;">Create</button>
+                            <button id="btn-rand-2" style="flex: 1; font-size: 0.8rem;">Random</button>
+                            <button id="btn-create-2" class="btn-purple" style="flex: 1; font-size: 0.8rem; padding: 8px;">Create</button>
                         </div>
                     </div>
                 </div>
@@ -282,9 +282,9 @@
 
             <div class="card">
                 <h2>Quick actions</h2>
-                <button class="widget-btn" onclick="alert('Feature coming soon!')">Delete all Tyler Files</button>
-                <button class="widget-btn" onclick="alert('Feature coming soon!')">Export all (JSON)</button>
-                <button class="widget-btn" onclick="alert('Feature coming soon!')">Import JSON</button>
+                <button class="widget-btn" id="feature-btn-1">Delete all Tyler Files</button>
+                <button class="widget-btn" id="feature-btn-2">Export all (JSON)</button>
+                <button class="widget-btn" id="feature-btn-3">Import JSON</button>
             </div>
         </div>
     </div>
@@ -303,391 +303,424 @@
         </div>
     </div>
 
-    <!-- MAIN JAVASCRIPT -->
+    <!-- MAIN JAVASCRIPT (WRAPPED SAFELY FOR CODEHS) -->
     <script>
-        // Supabase Initialization
-        const supabaseUrl = 'https://qoghsvgbirgrvmlvtcfe.supabase.co/';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvZ2hzdmdiaXJncnZtbHZ0Y2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzI1NzEsImV4cCI6MjA4OTg0ODU3MX0.Em6fUIhpEP84OH85T564F10RXOQ4ME_ZltFaYTGAo9A';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        const BUCKET_NAME = 'tyler-files';
-        
-        let currentCategory = 'pictures';
-        let isAdminUnlocked = false;
-        let failedAttempts = 0;
-        const maxAttempts = 10;
-        const correctPassword = "Tyl3rF1les";
-
-        // DOM Elements
-        const fileInput = document.getElementById('file-input');
-        const uploadStatus = document.getElementById('upload-status');
-        const uploadFolderSelect = document.getElementById('upload-folder-select');
-        const galleryContainer = document.getElementById('gallery-container');
-        const folderLockOverlay = document.getElementById('folder-lock-overlay');
-        const adminDashboardCard = document.getElementById('admin-dashboard-card');
-        const keyModal = document.getElementById('key-modal');
-        const keyModalError = document.getElementById('key-modal-error');
-
-        // Relative Time Function
-        function timeAgo(dateString) {
-            const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
-            if (seconds < 60) return "Just now";
-            const minutes = Math.floor(seconds / 60);
-            if (minutes < 60) return `${minutes}m ago`;
-            const hours = Math.floor(minutes / 60);
-            if (hours < 24) return `${hours}h ago`;
-            return `${Math.floor(hours / 24)}d ago`;
-        }
-
-        // --- UI TOGGLES ---
-        document.getElementById('nav-categories-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('categories-dropdown').classList.toggle('show'); });
-        window.addEventListener('click', (e) => { if (!document.getElementById('categories-dropdown').contains(e.target) && e.target.id !== 'nav-categories-btn') document.getElementById('categories-dropdown').classList.remove('show'); });
-        document.getElementById('nav-settings-btn').addEventListener('click', () => document.getElementById('settings-sidebar').classList.add('show'));
-        document.getElementById('close-settings-btn').addEventListener('click', () => document.getElementById('settings-sidebar').classList.remove('show'));
-        document.getElementById('theme-toggle-btn').addEventListener('click', () => document.body.classList.toggle('dark-mode'));
-        document.getElementById('return-home-btn').addEventListener('click', () => switchCategoryUI('pictures'));
-
-        function switchCategoryUI(categoryName) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            const targetBtn = document.querySelector(`.cat-btn[data-cat="${categoryName}"]`);
-            if (targetBtn) targetBtn.classList.add('active');
-            currentCategory = categoryName;
-            document.getElementById('current-category-label').innerText = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
-            document.getElementById('gallery-title').innerText = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
-            uploadFolderSelect.value = categoryName;
-            document.getElementById('categories-dropdown').classList.remove('show');
-            fetchFiles();
-        }
-
-        document.querySelectorAll('.cat-btn[data-cat]').forEach(btn => {
-            btn.addEventListener('click', () => switchCategoryUI(btn.getAttribute('data-cat')));
-        });
-
-        // --- ADMIN LOGIN LOGIC ---
-        document.getElementById('admin-submit-btn').addEventListener('click', () => {
-            if (failedAttempts >= maxAttempts) return;
-            const adminInput = document.getElementById('admin-password-input');
-            const statusMsg = document.getElementById('admin-status-msg');
+        document.addEventListener('DOMContentLoaded', () => {
             
-            if (adminInput.value === correctPassword) {
-                isAdminUnlocked = true;
-                document.getElementById('admin-login-ui').style.display = 'none';
-                document.getElementById('admin-unlocked-ui').style.display = 'block';
-                statusMsg.innerText = "";
-                adminDashboardCard.style.display = 'block'; 
-                fetchFiles(); 
-                fetchStorageStats(); 
-                fetchRecentUploads();
-                checkKeysStatus(); // Load keys into inputs
-            } else {
-                failedAttempts++;
-                adminInput.value = "";
-                statusMsg.style.color = "#ef4444";
-                if (failedAttempts >= maxAttempts) {
-                    statusMsg.innerText = "Locked! Too many incorrect attempts.";
-                    adminInput.disabled = true;
-                    document.getElementById('admin-submit-btn').disabled = true;
-                } else {
-                    statusMsg.innerText = `Wrong password. ${maxAttempts - failedAttempts} attempts left.`;
-                }
-            }
-        });
-
-        document.getElementById('admin-remove-perms-btn').addEventListener('click', () => {
-            isAdminUnlocked = false;
-            document.getElementById('admin-login-ui').style.display = 'block';
-            document.getElementById('admin-unlocked-ui').style.display = 'none';
-            document.getElementById('admin-password-input').value = "";
-            document.getElementById('admin-status-msg').innerText = "Permissions removed.";
-            document.getElementById('admin-status-msg').style.color = "var(--text-muted)";
-            adminDashboardCard.style.display = 'none'; 
-            fetchFiles(); 
-        });
-
-        // --- RECENT UPLOADS FEATURE ---
-        async function fetchRecentUploads() {
-            if (!isAdminUnlocked) return;
-            const container = document.getElementById('recent-uploads-container');
-            container.innerHTML = '<p style="font-size: 0.8rem; color: var(--text-muted);">Fetching across all folders...</p>';
+            // Supabase Initialization
+            const supabaseUrl = 'https://qoghsvgbirgrvmlvtcfe.supabase.co/';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvZ2hzdmdiaXJncnZtbHZ0Y2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzI1NzEsImV4cCI6MjA4OTg0ODU3MX0.Em6fUIhpEP84OH85T564F10RXOQ4ME_ZltFaYTGAo9A';
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            const BUCKET_NAME = 'tyler-files';
             
-            const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
-            let allFiles =[];
+            let currentCategory = 'pictures';
+            let isAdminUnlocked = false;
+            let failedAttempts = 0;
+            const maxAttempts = 10;
+            const correctPassword = "Tyl3rF1les";
 
-            // Fetch from all categories simultaneously
-            await Promise.all(categories.map(async (cat) => {
-                const { data } = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 5, sortBy: { column: 'created_at', order: 'desc' } });
-                if (data) {
-                    data.forEach(f => {
-                        if (f.name !== '.emptyFolderPlaceholder') {
-                            allFiles.push({ ...f, category: cat });
-                        }
-                    });
-                }
-            }));
+            // Grab Important Elements safely
+            const fileInput = document.getElementById('file-input');
+            const uploadStatus = document.getElementById('upload-status');
+            const uploadFolderSelect = document.getElementById('upload-folder-select');
+            const galleryContainer = document.getElementById('gallery-container');
+            const folderLockOverlay = document.getElementById('folder-lock-overlay');
+            const adminDashboardCard = document.getElementById('admin-dashboard-card');
+            const keyModal = document.getElementById('key-modal');
+            const keyModalError = document.getElementById('key-modal-error');
+            const catDropdown = document.getElementById('categories-dropdown');
+            const setSidebar = document.getElementById('settings-sidebar');
 
-            // Sort everything by date globally and take top 7
-            allFiles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            const topFiles = allFiles.slice(0, 7);
+            // Quick Action Buttons (Feature Coming Soon alerts)
+            document.getElementById('feature-btn-1').addEventListener('click', () => alert('Feature coming soon!'));
+            document.getElementById('feature-btn-2').addEventListener('click', () => alert('Feature coming soon!'));
+            document.getElementById('feature-btn-3').addEventListener('click', () => alert('Feature coming soon!'));
 
-            if (topFiles.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.8rem; color: var(--text-muted);">No files found.</p>';
-                return;
+            // Time Formatter
+            function timeAgo(dateString) {
+                const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
+                if (seconds < 60) return "Just now";
+                const minutes = Math.floor(seconds / 60);
+                if (minutes < 60) return `${minutes}m ago`;
+                const hours = Math.floor(minutes / 60);
+                if (hours < 24) return `${hours}h ago`;
+                return `${Math.floor(hours / 24)}d ago`;
             }
 
-            container.innerHTML = '';
-            for (let file of topFiles) {
-                const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`${file.category}/${file.name}`);
-                
-                let imgSrc = '';
-                if (file.category === 'pictures' || file.name.match(/\.(jpg|jpeg|png|gif)$/i)) {
-                    imgSrc = publicUrlData.publicUrl;
-                } else if (file.category === 'videos' || file.name.match(/\.(mp4|webm)$/i)) {
-                    imgSrc = 'https://via.placeholder.com/40x40/5a4fcf/ffffff?text=VID';
-                } else if (file.category === 'audio' || file.name.match(/\.(mp3|wav)$/i)) {
-                    imgSrc = 'https://via.placeholder.com/40x40/10b981/ffffff?text=AUD';
-                } else {
-                    imgSrc = 'https://via.placeholder.com/40x40/6b7280/ffffff?text=DOC';
-                }
-
-                const div = document.createElement('div');
-                div.className = 'recent-upload-item';
-                div.innerHTML = `
-                    <img src="${imgSrc}" alt="thumb">
-                    <div class="recent-upload-info">
-                        <span title="${file.name}">${file.name}</span>
-                        <div class="recent-badge">${file.category.toUpperCase()}</div>
-                    </div>
-                    <span style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap;">${timeAgo(file.created_at)}</span>
-                `;
-                container.appendChild(div);
-            }
-        }
-
-        // --- KEY GENERATOR FEATURE ---
-        window.generateRandom = function(inputId) {
-            document.getElementById(inputId).value = Math.random().toString(36).substring(2, 9);
-        }
-
-        window.createKey = async function(slotNumber, inputId) {
-            const val = document.getElementById(inputId).value.trim();
-            if (!val) return alert("Enter a key first!");
+            // --- UI TOGGLES ---
+            document.getElementById('nav-categories-btn').addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                catDropdown.classList.toggle('show'); 
+            });
             
-            // Set expiration to 2 hours from now
-            let expDate = new Date();
-            expDate.setHours(expDate.getHours() + 2);
+            window.addEventListener('click', (e) => { 
+                if (!catDropdown.contains(e.target) && e.target.id !== 'nav-categories-btn') {
+                    catDropdown.classList.remove('show'); 
+                }
+            });
+            
+            document.getElementById('nav-settings-btn').addEventListener('click', () => setSidebar.classList.add('show'));
+            document.getElementById('close-settings-btn').addEventListener('click', () => setSidebar.classList.remove('show'));
+            document.getElementById('theme-toggle-btn').addEventListener('click', () => document.body.classList.toggle('dark-mode'));
+            document.getElementById('return-home-btn').addEventListener('click', () => switchCategoryUI('pictures'));
 
-            const { error } = await supabase.from('upload_keys').upsert({
-                slot: slotNumber,
-                key_value: val,
-                expires_at: expDate.toISOString()
+            // Switch Categories Logic
+            function switchCategoryUI(categoryName) {
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                const targetBtn = document.querySelector(`.cat-btn[data-cat="${categoryName}"]`);
+                if (targetBtn) targetBtn.classList.add('active');
+                currentCategory = categoryName;
+                document.getElementById('current-category-label').innerText = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+                document.getElementById('gallery-title').innerText = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+                uploadFolderSelect.value = categoryName;
+                catDropdown.classList.remove('show');
+                fetchFiles();
+            }
+
+            document.querySelectorAll('.cat-btn[data-cat]').forEach(btn => {
+                btn.addEventListener('click', () => switchCategoryUI(btn.getAttribute('data-cat')));
             });
 
-            if (error) alert("Error saving key: " + error.message);
-            else {
-                document.getElementById(`slot${slotNumber}-status`).innerText = "Active (Expires in 2h)";
-                document.getElementById(`slot${slotNumber}-status`).style.color = "#10b981";
-            }
-        }
-
-        async function checkKeysStatus() {
-            const { data } = await supabase.from('upload_keys').select('*');
-            if (data) {
-                data.forEach(keyRow => {
-                    const statusEl = document.getElementById(`slot${keyRow.slot}-status`);
-                    const inputEl = document.getElementById(`slot${keyRow.slot}-input`);
-                    inputEl.value = keyRow.key_value;
-                    
-                    if (new Date(keyRow.expires_at) > new Date()) {
-                        statusEl.innerText = "Active";
-                        statusEl.style.color = "#10b981";
+            // --- ADMIN LOGIN LOGIC ---
+            document.getElementById('admin-submit-btn').addEventListener('click', () => {
+                if (failedAttempts >= maxAttempts) return;
+                const adminInput = document.getElementById('admin-password-input');
+                const statusMsg = document.getElementById('admin-status-msg');
+                
+                if (adminInput.value === correctPassword) {
+                    isAdminUnlocked = true;
+                    document.getElementById('admin-login-ui').style.display = 'none';
+                    document.getElementById('admin-unlocked-ui').style.display = 'block';
+                    statusMsg.innerText = "";
+                    adminDashboardCard.style.display = 'block'; 
+                    fetchFiles(); 
+                    fetchStorageStats(); 
+                    fetchRecentUploads();
+                    checkKeysStatus(); 
+                } else {
+                    failedAttempts++;
+                    adminInput.value = "";
+                    statusMsg.style.color = "#ef4444";
+                    if (failedAttempts >= maxAttempts) {
+                        statusMsg.innerText = "Locked! Too many incorrect attempts.";
+                        adminInput.disabled = true;
+                        document.getElementById('admin-submit-btn').disabled = true;
                     } else {
-                        statusEl.innerText = "Expired";
-                        statusEl.style.color = "#ef4444";
+                        statusMsg.innerText = `Wrong password. ${maxAttempts - failedAttempts} attempts left.`;
                     }
-                });
-            }
-        }
-
-        // --- UPLOAD PROCESS & VERIFICATION ---
-        document.getElementById('choose-file-btn').addEventListener('click', () => fileInput.click());
-        
-        fileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const folder = uploadFolderSelect.value;
-            
-            // Check Admin Vault Perms First
-            if (folder === 'admin' && !isAdminUnlocked) {
-                uploadStatus.style.color = '#ef4444';
-                uploadStatus.innerText = 'ERROR: YOU DO NOT HAVE THE PERMISSIONS NECESSARY';
-                fileInput.value = ''; return;
-            }
-
-            // Key Verification for Non-Admins
-            if (!isAdminUnlocked) {
-                const userKey = await promptForUploadKey();
-                if (!userKey) {
-                    fileInput.value = ''; // Cancelled
-                    return; 
                 }
-                
-                // Verify Key in DB
-                uploadStatus.innerText = "Verifying key...";
-                const { data, error } = await supabase.from('upload_keys').select('*').eq('key_value', userKey);
-                
-                const validKey = data?.find(k => new Date(k.expires_at) > new Date());
-                if (!validKey) {
-                    keyModalError.style.display = 'block';
-                    fileInput.value = ''; return; // Failed verification
-                }
-                keyModal.classList.add('hidden'); // Close modal, key is good!
-            }
-
-            // Proceed to upload
-            uploadStatus.style.color = 'var(--text-main)';
-            uploadStatus.innerText = `Uploading '${file.name}'...`;
-            const filePath = `${folder}/${Date.now()}_${file.name}`;
-
-            const { error: uploadError } = await supabase.storage.from(BUCKET_NAME).upload(filePath, file);
-
-            if (uploadError) {
-                uploadStatus.style.color = '#ef4444';
-                uploadStatus.innerText = `Upload failed: ${uploadError.message}`;
-            } else {
-                uploadStatus.style.color = '#10b981';
-                uploadStatus.innerText = `Successfully uploaded!`;
-                fileInput.value = ''; 
-                if (folder === currentCategory) fetchFiles();
-                if (isAdminUnlocked) { fetchStorageStats(); fetchRecentUploads(); }
-            }
-            setTimeout(() => { uploadStatus.style.color = 'var(--text-main)'; uploadStatus.innerText = 'Select a file to upload'; }, 5000);
-        });
-
-        // Function to halt execution and wait for modal input
-        function promptForUploadKey() {
-            return new Promise((resolve) => {
-                keyModal.classList.remove('hidden');
-                keyModalError.style.display = 'none';
-                document.getElementById('upload-key-input').value = "";
-
-                document.getElementById('verify-key-btn').onclick = () => {
-                    resolve(document.getElementById('upload-key-input').value.trim());
-                };
-                document.getElementById('cancel-key-btn').onclick = () => {
-                    keyModal.classList.add('hidden');
-                    resolve(null);
-                };
             });
-        }
 
-        // --- FETCH FILES & DASHBOARD LOGIC ---
-        async function fetchStorageStats() {
-            if (!isAdminUnlocked) return;
-            const serverStatusEl = document.getElementById('server-status');
-            serverStatusEl.innerText = "Checking..."; serverStatusEl.style.color = "var(--text-main)";
+            document.getElementById('admin-remove-perms-btn').addEventListener('click', () => {
+                isAdminUnlocked = false;
+                document.getElementById('admin-login-ui').style.display = 'block';
+                document.getElementById('admin-unlocked-ui').style.display = 'none';
+                document.getElementById('admin-password-input').value = "";
+                document.getElementById('admin-status-msg').innerText = "Permissions removed.";
+                document.getElementById('admin-status-msg').style.color = "var(--text-muted)";
+                adminDashboardCard.style.display = 'none'; 
+                fetchFiles(); 
+            });
 
-            const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
-            let totalBytes = 0;
-            let breakdown = { pictures: 0, videos: 0, audio: 0, files: 0, admin: 0 };
-            let isHealthy = true;
-
-            for (let cat of categories) {
-                try {
-                    const { data, error } = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 1000 });
-                    if (data) data.forEach(f => { if (f.metadata?.size) { breakdown[cat] += f.metadata.size; totalBytes += f.metadata.size; }});
-                } catch { isHealthy = false; }
-            }
-
-            serverStatusEl.innerText = isHealthy ? "🟢 Healthy" : "🔴 Offline / Error";
-            serverStatusEl.style.color = isHealthy ? "#10b981" : "#ef4444";
-
-            const toMB = (bytes) => (bytes / 1048576).toFixed(2);
-            categories.forEach(cat => document.getElementById(`stat-${cat}`).innerText = `${toMB(breakdown[cat])} MB`);
-            
-            const totalMB = (totalBytes / 1048576);
-            document.getElementById('stat-total').innerText = totalMB.toFixed(2);
-            
-            let percentage = Math.min((totalMB / 50) * 100, 100);
-            const bar = document.getElementById('storage-bar');
-            bar.style.width = `${percentage}%`;
-            bar.style.backgroundColor = percentage > 85 ? "#ef4444" : "var(--accent-purple)";
-        }
-
-        async function fetchFiles() {
-            if (currentCategory === 'admin' && !isAdminUnlocked) {
-                galleryContainer.style.filter = "blur(10px)";
-                folderLockOverlay.classList.remove('hidden');
-                return;
-            } else {
-                galleryContainer.style.filter = "none";
-                folderLockOverlay.classList.add('hidden');
-            }
-
-            galleryContainer.innerHTML = '<p style="color: var(--text-muted);">Loading files from Supabase...</p>';
-            const { data, error } = await supabase.storage.from(BUCKET_NAME).list(currentCategory, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
-
-            if (error) { galleryContainer.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; return; }
-
-            galleryContainer.innerHTML = '';
-            const validFiles = data.filter(f => f.name !== '.emptyFolderPlaceholder');
-            if (validFiles.length === 0) { galleryContainer.innerHTML = `<p style="color: var(--text-muted);">No items yet.</p>`; return; }
-
-            for (let file of validFiles) {
-                const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`${currentCategory}/${file.name}`);
-                const url = publicUrlData.publicUrl;
+            // --- RECENT UPLOADS FEATURE ---
+            async function fetchRecentUploads() {
+                if (!isAdminUnlocked) return;
+                const container = document.getElementById('recent-uploads-container');
+                container.innerHTML = '<p style="font-size: 0.8rem; color: var(--text-muted);">Fetching across all folders...</p>';
                 
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'media-item';
+                const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
+                let allFiles =[];
 
-                let mediaContent = '';
-                if (currentCategory === 'pictures' || (currentCategory === 'admin' && file.name.match(/\.(jpg|jpeg|png|gif)$/i))) {
-                    mediaContent = `<img src="${url}" alt="image loading..." loading="lazy">`;
-                } else if (currentCategory === 'videos' || (currentCategory === 'admin' && file.name.match(/\.(mp4|webm|ogg)$/i))) {
-                    mediaContent = `<video controls src="${url}"></video>`;
-                } else if (currentCategory === 'audio' || (currentCategory === 'admin' && file.name.match(/\.(mp3|wav|m4a)$/i))) {
-                    mediaContent = `<div style="height: 150px; display:flex; justify-content:center; align-items:center; background: var(--bg-card); padding: 10px;"><audio controls src="${url}" style="width: 100%; outline: none;"></audio></div>`;
-                } else {
-                    mediaContent = `<div style="height: 150px; background: var(--bg-card); display:flex; justify-content:center; align-items:center; font-size: 3rem;">📄</div>`;
-                }
-
-                itemDiv.innerHTML = `
-                    ${mediaContent}
-                    <div class="media-info">
-                        <span style="font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${file.name}">${file.name}</span>
-                        <a href="${url}" target="_blank">Open Full Size</a>
-                    </div>
-                `;
-
-                if (isAdminUnlocked) {
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'delete-btn';
-                    deleteBtn.innerText = 'X';
-                    deleteBtn.addEventListener('click', async () => {
-                        if (confirm("Confirm: Delete this file completely?")) {
-                            await supabase.storage.from(BUCKET_NAME).remove([`${currentCategory}/${file.name}`]);
-                            fetchFiles(); fetchStorageStats(); fetchRecentUploads();
-                        }
-                    });
-                    itemDiv.appendChild(deleteBtn);
-
-                    if (currentCategory !== 'admin') {
-                        const moveBtn = document.createElement('button');
-                        moveBtn.className = 'move-admin-btn';
-                        moveBtn.innerText = 'Move To Admin?';
-                        moveBtn.addEventListener('click', async () => {
-                            if (confirm("Confirm: Move this file to the Admin category?")) {
-                                await supabase.storage.from(BUCKET_NAME).move(`${currentCategory}/${file.name}`, `admin/${file.name}`);
-                                fetchFiles(); fetchStorageStats();
+                await Promise.all(categories.map(async (cat) => {
+                    const { data } = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 5, sortBy: { column: 'created_at', order: 'desc' } });
+                    if (data) {
+                        data.forEach(f => {
+                            if (f.name !== '.emptyFolderPlaceholder') {
+                                allFiles.push({ ...f, category: cat });
                             }
                         });
-                        itemDiv.querySelector('.media-info').appendChild(moveBtn);
                     }
-                }
-                galleryContainer.appendChild(itemDiv);
-            }
-        }
+                }));
 
-        fetchFiles(); // Initial load
+                allFiles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                const topFiles = allFiles.slice(0, 7);
+
+                if (topFiles.length === 0) {
+                    container.innerHTML = '<p style="font-size: 0.8rem; color: var(--text-muted);">No files found.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                for (let file of topFiles) {
+                    const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`${file.category}/${file.name}`);
+                    
+                    let imgSrc = '';
+                    if (file.category === 'pictures' || file.name.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                        imgSrc = publicUrlData.publicUrl;
+                    } else if (file.category === 'videos' || file.name.match(/\.(mp4|webm)$/i)) {
+                        imgSrc = 'https://via.placeholder.com/40x40/5a4fcf/ffffff?text=VID';
+                    } else if (file.category === 'audio' || file.name.match(/\.(mp3|wav)$/i)) {
+                        imgSrc = 'https://via.placeholder.com/40x40/10b981/ffffff?text=AUD';
+                    } else {
+                        imgSrc = 'https://via.placeholder.com/40x40/6b7280/ffffff?text=DOC';
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'recent-upload-item';
+                    div.innerHTML = `
+                        <img src="${imgSrc}" alt="thumb">
+                        <div class="recent-upload-info">
+                            <span title="${file.name}">${file.name}</span>
+                            <div class="recent-badge">${file.category.toUpperCase()}</div>
+                        </div>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap;">${timeAgo(file.created_at)}</span>
+                    `;
+                    container.appendChild(div);
+                }
+            }
+
+            // --- KEY GENERATOR FEATURE ---
+            document.getElementById('btn-rand-1').addEventListener('click', () => document.getElementById('slot1-input').value = Math.random().toString(36).substring(2, 9));
+            document.getElementById('btn-rand-2').addEventListener('click', () => document.getElementById('slot2-input').value = Math.random().toString(36).substring(2, 9));
+
+            document.getElementById('btn-create-1').addEventListener('click', () => createKeyProcess(1, 'slot1-input'));
+            document.getElementById('btn-create-2').addEventListener('click', () => createKeyProcess(2, 'slot2-input'));
+
+            async function createKeyProcess(slotNumber, inputId) {
+                const val = document.getElementById(inputId).value.trim();
+                if (!val) return alert("Enter a key first!");
+                
+                let expDate = new Date();
+                expDate.setHours(expDate.getHours() + 2);
+
+                const { error } = await supabase.from('upload_keys').upsert({
+                    slot: slotNumber,
+                    key_value: val,
+                    expires_at: expDate.toISOString()
+                });
+
+                if (error) alert("Error saving key: " + error.message);
+                else {
+                    document.getElementById(`slot${slotNumber}-status`).innerText = "Active (Expires in 2h)";
+                    document.getElementById(`slot${slotNumber}-status`).style.color = "#10b981";
+                }
+            }
+
+            async function checkKeysStatus() {
+                const { data } = await supabase.from('upload_keys').select('*');
+                if (data) {
+                    data.forEach(keyRow => {
+                        const statusEl = document.getElementById(`slot${keyRow.slot}-status`);
+                        const inputEl = document.getElementById(`slot${keyRow.slot}-input`);
+                        if(inputEl) inputEl.value = keyRow.key_value;
+                        
+                        if (statusEl) {
+                            if (new Date(keyRow.expires_at) > new Date()) {
+                                statusEl.innerText = "Active";
+                                statusEl.style.color = "#10b981";
+                            } else {
+                                statusEl.innerText = "Expired";
+                                statusEl.style.color = "#ef4444";
+                            }
+                        }
+                    });
+                }
+            }
+
+            // --- UPLOAD PROCESS & VERIFICATION ---
+            document.getElementById('choose-file-btn').addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const folder = uploadFolderSelect.value;
+                
+                if (folder === 'admin' && !isAdminUnlocked) {
+                    uploadStatus.style.color = '#ef4444';
+                    uploadStatus.innerText = 'ERROR: YOU DO NOT HAVE THE PERMISSIONS NECESSARY';
+                    fileInput.value = ''; return;
+                }
+
+                if (!isAdminUnlocked) {
+                    const userKey = await promptForUploadKey();
+                    if (!userKey) {
+                        fileInput.value = ''; 
+                        uploadStatus.innerText = 'Upload cancelled.';
+                        return; 
+                    }
+                    
+                    uploadStatus.style.color = 'var(--text-main)';
+                    uploadStatus.innerText = "Verifying key...";
+                    
+                    const { data, error } = await supabase.from('upload_keys').select('*').eq('key_value', userKey);
+                    
+                    const validKey = data?.find(k => new Date(k.expires_at) > new Date());
+                    if (!validKey) {
+                        keyModalError.style.display = 'block';
+                        uploadStatus.style.color = '#ef4444';
+                        uploadStatus.innerText = 'Invalid or expired key. Upload aborted.';
+                        fileInput.value = ''; 
+                        return; 
+                    }
+                    keyModal.classList.add('hidden'); 
+                }
+
+                uploadStatus.style.color = 'var(--text-main)';
+                uploadStatus.innerText = `Uploading '${file.name}'...`;
+                const filePath = `${folder}/${Date.now()}_${file.name}`;
+
+                const { error: uploadError } = await supabase.storage.from(BUCKET_NAME).upload(filePath, file);
+
+                if (uploadError) {
+                    uploadStatus.style.color = '#ef4444';
+                    uploadStatus.innerText = `Upload failed: ${uploadError.message}`;
+                } else {
+                    uploadStatus.style.color = '#10b981';
+                    uploadStatus.innerText = `Successfully uploaded!`;
+                    fileInput.value = ''; 
+                    if (folder === currentCategory) fetchFiles();
+                    if (isAdminUnlocked) { fetchStorageStats(); fetchRecentUploads(); }
+                }
+                setTimeout(() => { uploadStatus.style.color = 'var(--text-main)'; uploadStatus.innerText = 'Select a file to upload'; }, 5000);
+            });
+
+            // Modal Prompter Function
+            function promptForUploadKey() {
+                return new Promise((resolve) => {
+                    keyModal.classList.remove('hidden');
+                    keyModalError.style.display = 'none';
+                    document.getElementById('upload-key-input').value = "";
+
+                    // Rebuild buttons to avoid duplicated event listeners
+                    const oldVerify = document.getElementById('verify-key-btn');
+                    const oldCancel = document.getElementById('cancel-key-btn');
+                    const newVerify = oldVerify.cloneNode(true);
+                    const newCancel = oldCancel.cloneNode(true);
+                    oldVerify.parentNode.replaceChild(newVerify, oldVerify);
+                    oldCancel.parentNode.replaceChild(newCancel, oldCancel);
+
+                    newVerify.addEventListener('click', () => {
+                        resolve(document.getElementById('upload-key-input').value.trim());
+                    });
+                    newCancel.addEventListener('click', () => {
+                        keyModal.classList.add('hidden');
+                        resolve(null);
+                    });
+                });
+            }
+
+            // --- FETCH FILES & DASHBOARD LOGIC ---
+            async function fetchStorageStats() {
+                if (!isAdminUnlocked) return;
+                const serverStatusEl = document.getElementById('server-status');
+                serverStatusEl.innerText = "Checking..."; serverStatusEl.style.color = "var(--text-main)";
+
+                const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
+                let totalBytes = 0;
+                let breakdown = { pictures: 0, videos: 0, audio: 0, files: 0, admin: 0 };
+                let isHealthy = true;
+
+                for (let cat of categories) {
+                    try {
+                        const { data, error } = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 1000 });
+                        if (data) data.forEach(f => { if (f.metadata?.size) { breakdown[cat] += f.metadata.size; totalBytes += f.metadata.size; }});
+                    } catch { isHealthy = false; }
+                }
+
+                serverStatusEl.innerText = isHealthy ? "🟢 Healthy" : "🔴 Offline / Error";
+                serverStatusEl.style.color = isHealthy ? "#10b981" : "#ef4444";
+
+                const toMB = (bytes) => (bytes / 1048576).toFixed(2);
+                categories.forEach(cat => document.getElementById(`stat-${cat}`).innerText = `${toMB(breakdown[cat])} MB`);
+                
+                const totalMB = (totalBytes / 1048576);
+                document.getElementById('stat-total').innerText = totalMB.toFixed(2);
+                
+                let percentage = Math.min((totalMB / 50) * 100, 100);
+                const bar = document.getElementById('storage-bar');
+                bar.style.width = `${percentage}%`;
+                bar.style.backgroundColor = percentage > 85 ? "#ef4444" : "var(--accent-purple)";
+            }
+
+            async function fetchFiles() {
+                if (currentCategory === 'admin' && !isAdminUnlocked) {
+                    galleryContainer.style.filter = "blur(10px)";
+                    folderLockOverlay.classList.remove('hidden');
+                    return;
+                } else {
+                    galleryContainer.style.filter = "none";
+                    folderLockOverlay.classList.add('hidden');
+                }
+
+                galleryContainer.innerHTML = '<p style="color: var(--text-muted);">Loading files from Supabase...</p>';
+                const { data, error } = await supabase.storage.from(BUCKET_NAME).list(currentCategory, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+
+                if (error) { galleryContainer.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; return; }
+
+                galleryContainer.innerHTML = '';
+                const validFiles = data.filter(f => f.name !== '.emptyFolderPlaceholder');
+                if (validFiles.length === 0) { galleryContainer.innerHTML = `<p style="color: var(--text-muted);">No items yet.</p>`; return; }
+
+                for (let file of validFiles) {
+                    const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`${currentCategory}/${file.name}`);
+                    const url = publicUrlData.publicUrl;
+                    
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'media-item';
+
+                    let mediaContent = '';
+                    if (currentCategory === 'pictures' || (currentCategory === 'admin' && file.name.match(/\.(jpg|jpeg|png|gif)$/i))) {
+                        mediaContent = `<img src="${url}" alt="image loading..." loading="lazy">`;
+                    } else if (currentCategory === 'videos' || (currentCategory === 'admin' && file.name.match(/\.(mp4|webm|ogg)$/i))) {
+                        mediaContent = `<video controls src="${url}"></video>`;
+                    } else if (currentCategory === 'audio' || (currentCategory === 'admin' && file.name.match(/\.(mp3|wav|m4a)$/i))) {
+                        mediaContent = `<div style="height: 150px; display:flex; justify-content:center; align-items:center; background: var(--bg-card); padding: 10px;"><audio controls src="${url}" style="width: 100%; outline: none;"></audio></div>`;
+                    } else {
+                        mediaContent = `<div style="height: 150px; background: var(--bg-card); display:flex; justify-content:center; align-items:center; font-size: 3rem;">📄</div>`;
+                    }
+
+                    itemDiv.innerHTML = `
+                        ${mediaContent}
+                        <div class="media-info">
+                            <span style="font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${file.name}">${file.name}</span>
+                            <a href="${url}" target="_blank">Open Full Size</a>
+                        </div>
+                    `;
+
+                    if (isAdminUnlocked) {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.innerText = 'X';
+                        deleteBtn.addEventListener('click', async () => {
+                            if (confirm("Confirm: Delete this file completely?")) {
+                                await supabase.storage.from(BUCKET_NAME).remove([`${currentCategory}/${file.name}`]);
+                                fetchFiles(); fetchStorageStats(); fetchRecentUploads();
+                            }
+                        });
+                        itemDiv.appendChild(deleteBtn);
+
+                        if (currentCategory !== 'admin') {
+                            const moveBtn = document.createElement('button');
+                            moveBtn.className = 'move-admin-btn';
+                            moveBtn.innerText = 'Move To Admin?';
+                            moveBtn.addEventListener('click', async () => {
+                                if (confirm("Confirm: Move this file to the Admin category?")) {
+                                    await supabase.storage.from(BUCKET_NAME).move(`${currentCategory}/${file.name}`, `admin/${file.name}`);
+                                    fetchFiles(); fetchStorageStats(); fetchRecentUploads();
+                                }
+                            });
+                            itemDiv.querySelector('.media-info').appendChild(moveBtn);
+                        }
+                    }
+                    galleryContainer.appendChild(itemDiv);
+                }
+            }
+
+            // Start up the view safely!
+            fetchFiles(); 
+            
+        });
     </script>
 </body>
 </html>
