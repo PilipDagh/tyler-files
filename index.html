@@ -37,11 +37,10 @@
             --progress-bg: #374151;
         }
 
-        /* --- GLOBAL STYLES --- */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.3s, color 0.3s; padding: 20px; }
 
-        /* --- HEADER --- */
+        /* --- HEADER & MENUS --- */
         .header { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px 24px; display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 20px auto; position: relative; }
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo-box { background-color: var(--accent-purple); color: white; font-weight: bold; font-size: 1.2rem; height: 48px; width: 48px; display: flex; justify-content: center; align-items: center; border-radius: 10px; }
@@ -49,57 +48,67 @@
         .header-text p { font-size: 0.85rem; color: var(--text-muted); }
         .header-buttons { display: flex; gap: 10px; }
         
-        button { background-color: var(--btn-bg); color: var(--text-main); border: 1px solid var(--btn-border); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+        button { background-color: var(--btn-bg); color: var(--text-main); border: 1px solid var(--btn-border); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 8px; justify-content: center;}
         button:hover { background-color: var(--btn-hover); }
+        .btn-purple { background-color: var(--accent-purple); color: white; border: none; padding: 10px 20px; }
+        .btn-purple:hover { background-color: var(--accent-purple-hover); color: white;}
 
-        /* --- DROPDOWN MENUS --- */
         #categories-dropdown { position: absolute; top: 75px; right: 80px; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; width: 300px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 1000; visibility: hidden; opacity: 0; transform: translateY(-10px); transition: all 0.3s ease; }
         #categories-dropdown.show { visibility: visible; opacity: 1; transform: translateY(0); }
         .cat-btn { justify-content: center; font-size: 0.85rem; padding: 10px 5px; }
         .cat-btn.active { border-color: var(--accent-purple); color: var(--accent-purple); }
 
         /* --- SETTINGS SIDEBAR --- */
-        #settings-sidebar { position: fixed; top: 0; right: -400px; width: 350px; height: 100vh; background-color: var(--bg-card); border-left: 1px solid var(--border-color); box-shadow: -4px 0 15px rgba(0,0,0,0.05); padding: 24px; transition: right 0.3s ease; z-index: 2000; display: flex; flex-direction: column; overflow-y: auto;}
+        #settings-sidebar { position: fixed; top: 0; right: -400px; width: 400px; height: 100vh; background-color: var(--bg-card); border-left: 1px solid var(--border-color); box-shadow: -4px 0 15px rgba(0,0,0,0.05); padding: 24px; transition: right 0.3s ease; z-index: 2000; display: flex; flex-direction: column; overflow-y: auto;}
         #settings-sidebar.show { right: 0; }
         .close-btn { align-self: flex-end; border: none; background: transparent; font-size: 1.2rem; margin-bottom: 20px;}
-        .credits { margin-top: auto; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 20px; line-height: 1.5; }
+        .credits { margin-top: 30px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 20px; line-height: 1.5; }
 
-        /* --- MAIN LAYOUT GRID --- */
+        /* --- MAIN LAYOUT & UPLOAD --- */
         .main-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
         @media (max-width: 800px) { .main-container { grid-template-columns: 1fr; } }
         .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
         .card h2 { font-size: 1.25rem; margin-bottom: 10px; }
         .card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
 
-        /* --- UPLOAD AREA --- */
         .upload-box { border: 2px dashed var(--btn-border); border-radius: 12px; padding: 40px 20px; text-align: center; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .btn-purple { background-color: var(--accent-purple); color: white; border: none; padding: 10px 20px; }
-        .btn-purple:hover { background-color: var(--accent-purple-hover); color: white;}
         .upload-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.9rem; }
         select, input[type="text"], input[type="password"] { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; outline: none; }
 
-        /* --- GALLERY GRID & ADMIN UI ELEMENTS --- */
+        /* --- GALLERY GRID --- */
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; transition: filter 0.3s ease;}
         .media-item { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: var(--bg-body); display: flex; flex-direction: column; position: relative; }
         .media-item img, .media-item video { width: 100%; height: 150px; object-fit: cover; background: #000; }
         .media-info { padding: 10px; font-size: 0.8rem; word-break: break-all; display: flex; flex-direction: column; gap: 5px; }
         .media-info a { color: var(--accent-purple); text-decoration: none; font-weight: 500; }
         .widget-btn { width: 100%; justify-content: flex-start; margin-bottom: 10px; }
-
-        .delete-btn { position: absolute; top: 8px; right: 8px; background-color: #dc2626; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: bold; font-size: 1rem; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; padding: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .delete-btn:hover { background-color: #991b1b; }
         
-        .move-admin-btn { background-color: #374151; color: white; border: none; padding: 5px 8px; border-radius: 5px; font-size: 0.75rem; cursor: pointer; margin-top: 5px; width: 100%; justify-content: center;}
+        /* Admin Interactive Buttons */
+        .delete-btn { position: absolute; top: 8px; right: 8px; background-color: #dc2626; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: bold; font-size: 1rem; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; padding: 0;}
+        .delete-btn:hover { background-color: #991b1b; }
+        .move-admin-btn { background-color: #374151; color: white; border: none; padding: 5px 8px; border-radius: 5px; font-size: 0.75rem; cursor: pointer; margin-top: 5px; width: 100%;}
         .move-admin-btn:hover { background-color: #1f2937; }
 
-        /* Locked Admin Overlay */
-        .locked-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; z-index: 50; text-align: center; padding: 20px; }
+        /* --- MODALS & OVERLAYS --- */
+        .locked-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5000; text-align: center; padding: 20px; }
         .locked-overlay.hidden { display: none; }
+        .modal-box { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); width: 100%; max-width: 400px;}
+        
+        #folder-lock-overlay { position: absolute; z-index: 50; border-radius: 12px;} /* Specific overlay for Admin Folder Vault */
 
-        /* --- ADMIN DASHBOARD ELEMENTS --- */
+        /* --- ADMIN DASHBOARD & SIDEBAR TOOLS --- */
         .admin-stat-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
         .progress-bar-container { background-color: var(--progress-bg); border-radius: 10px; height: 10px; margin-top: 15px; overflow: hidden; width: 100%; }
         #storage-bar { background-color: var(--accent-purple); width: 0%; height: 100%; transition: width 0.5s ease; }
+        
+        .recent-upload-item { display: flex; gap: 10px; margin-bottom: 10px; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-body); align-items: center;}
+        .recent-upload-item img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; background: black;}
+        .recent-upload-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
+        .recent-upload-info span { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .recent-badge { font-size: 0.65rem; padding: 2px 6px; background: var(--accent-purple); color: white; border-radius: 10px; width: fit-content; margin-top: 3px;}
+
+        .key-slot { border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; margin-bottom: 10px; background: var(--bg-body);}
+        .key-controls { display: flex; gap: 5px; margin-top: 8px; }
     </style>
 </head>
 <body class="dark-mode">
@@ -136,7 +145,7 @@
         <button class="close-btn" id="close-settings-btn">✖ Close</button>
         <h2>Settings</h2>
         <br>
-        <button id="theme-toggle-btn" style="width: 100%; justify-content: center;">Toggle Dark/Light Mode</button>
+        <button id="theme-toggle-btn" style="width: 100%;">Toggle Dark/Light Mode</button>
         
         <!-- ADMIN ACCESS SECTION -->
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
@@ -145,12 +154,47 @@
             <div id="admin-login-ui">
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Enter code to enable advanced features.</p>
                 <input type="password" id="admin-password-input" placeholder="Admin Code" style="width: 100%; margin-bottom: 10px;">
-                <button id="admin-submit-btn" class="btn-purple" style="width: 100%; justify-content: center;">Unlock</button>
+                <button id="admin-submit-btn" class="btn-purple" style="width: 100%;">Unlock</button>
             </div>
 
             <div id="admin-unlocked-ui" style="display: none;">
                 <p style="font-size: 0.85rem; color: #10b981; margin-bottom: 10px; font-weight: bold;">✓ Admin Unlocked</p>
-                <button id="admin-remove-perms-btn" style="width: 100%; justify-content: center; background-color: #ef4444; color: white; border: none;">Remove Perms</button>
+                <button id="admin-remove-perms-btn" style="width: 100%; background-color: #ef4444; color: white; border: none;">Remove Perms</button>
+                
+                <!-- KEY GENERATOR -->
+                <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                    <h3 style="font-size: 1rem; margin-bottom: 10px;">Upload Key Generator</h3>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Keys allow non-admins to upload files. Valid for 2 hours.</p>
+                    
+                    <div class="key-slot">
+                        <span style="font-size: 0.8rem; font-weight: bold;">Slot 1</span>
+                        <span id="slot1-status" style="float: right; font-size: 0.7rem; color: var(--text-muted);">No active key</span>
+                        <input type="text" id="slot1-input" placeholder="Custom key..." style="width: 100%; margin-top: 5px;">
+                        <div class="key-controls">
+                            <button onclick="generateRandom('slot1-input')" style="flex: 1; font-size: 0.8rem;">Random</button>
+                            <button onclick="createKey(1, 'slot1-input')" class="btn-purple" style="flex: 1; font-size: 0.8rem; padding: 8px;">Create</button>
+                        </div>
+                    </div>
+
+                    <div class="key-slot">
+                        <span style="font-size: 0.8rem; font-weight: bold;">Slot 2</span>
+                        <span id="slot2-status" style="float: right; font-size: 0.7rem; color: var(--text-muted);">No active key</span>
+                        <input type="text" id="slot2-input" placeholder="Custom key..." style="width: 100%; margin-top: 5px;">
+                        <div class="key-controls">
+                            <button onclick="generateRandom('slot2-input')" style="flex: 1; font-size: 0.8rem;">Random</button>
+                            <button onclick="createKey(2, 'slot2-input')" class="btn-purple" style="flex: 1; font-size: 0.8rem; padding: 8px;">Create</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECENT UPLOADS -->
+                <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                    <h3 style="font-size: 1rem; margin-bottom: 10px;">Recent Uploads</h3>
+                    <div id="recent-uploads-container">
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Loading recent files...</p>
+                    </div>
+                </div>
+
             </div>
             
             <p id="admin-status-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: bold;"></p>
@@ -164,8 +208,6 @@
 
     <!-- MAIN CONTENT -->
     <div class="main-container">
-        
-        <!-- LEFT COLUMN -->
         <div class="left-col">
             <div class="card">
                 <h2>Upload to Tyler Files</h2>
@@ -177,7 +219,7 @@
                         <input type="file" id="file-input" style="display: none;">
                         <button class="btn-purple" id="choose-file-btn">Choose files</button>
                     </div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">Supported: images, mp4, mp3/wav, plain text.</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Non-admins require a valid Upload Key.</p>
                 </div>
 
                 <div class="upload-controls">
@@ -205,8 +247,8 @@
                     <p style="color: var(--text-muted);">Loading files...</p>
                 </div>
 
-                <!-- Loecked Overlay for Admin Folder -->
-                <div id="locked-overlay" class="locked-overlay hidden">
+                <!-- Locked Overlay for Admin Folder -->
+                <div id="folder-lock-overlay" class="locked-overlay hidden">
                     <h3 style="color: #ef4444; font-size: 1.5rem; margin-bottom: 10px;">Access Denied</h3>
                     <p style="color: white; margin-bottom: 20px;">Return Back To Home, No Permissions Found</p>
                     <button id="return-home-btn" class="btn-purple">Return To Home</button>
@@ -216,18 +258,13 @@
 
         <!-- RIGHT COLUMN -->
         <div class="right-col">
-
             <!-- ADMIN DASHBOARD WIDGET -->
             <div class="card" id="admin-dashboard-card" style="display: none; border-color: var(--accent-purple);">
                 <h2 style="color: var(--accent-purple);">Admin Dashboard</h2>
-                
                 <div style="margin-bottom: 15px; font-size: 0.9rem;">
-                    <strong>Supabase Status: </strong> 
-                    <span id="server-status">Checking...</span>
+                    <strong>Supabase Status: </strong> <span id="server-status">Checking...</span>
                 </div>
-                
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 15px;">
-                
                 <h3 style="font-size: 1rem; margin-bottom: 10px;">Storage Usage</h3>
                 <div class="admin-stat-row"><span>Pictures:</span> <span id="stat-pictures">0.00 MB</span></div>
                 <div class="admin-stat-row"><span>Videos:</span> <span id="stat-videos">0.00 MB</span></div>
@@ -249,332 +286,408 @@
                 <button class="widget-btn" onclick="alert('Feature coming soon!')">Export all (JSON)</button>
                 <button class="widget-btn" onclick="alert('Feature coming soon!')">Import JSON</button>
             </div>
+        </div>
+    </div>
 
-            <div class="card">
-                <h2>About</h2>
-                <p>This app uses Supabase Storage. Files are separated into category folders dynamically.</p>
+    <!-- NON-ADMIN KEY MODAL POPUP -->
+    <div id="key-modal" class="locked-overlay hidden">
+        <div class="modal-box">
+            <h3 style="font-size: 1.25rem; margin-bottom: 10px;">Upload Key Required</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">You must enter a valid key generated by an admin to upload files to this server.</p>
+            <input type="text" id="upload-key-input" placeholder="Input Key Here..." style="width: 100%; margin-bottom: 15px;">
+            <p id="key-modal-error" style="color: #ef4444; font-size: 0.8rem; margin-bottom: 15px; display: none;">Invalid or expired key!</p>
+            <div style="display: flex; gap: 10px;">
+                <button id="cancel-key-btn" style="flex: 1;">Cancel</button>
+                <button id="verify-key-btn" class="btn-purple" style="flex: 1;">Verify & Upload</button>
             </div>
         </div>
     </div>
 
     <!-- MAIN JAVASCRIPT -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // SUPABASE INITIALIZATION
-            const supabaseUrl = 'https://qoghsvgbirgrvmlvtcfe.supabase.co/';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvZ2hzdmdiaXJncnZtbHZ0Y2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzI1NzEsImV4cCI6MjA4OTg0ODU3MX0.Em6fUIhpEP84OH85T564F10RXOQ4ME_ZltFaYTGAo9A';
-            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-            const BUCKET_NAME = 'tyler-files';
-            
-            let currentCategory = 'pictures';
+        // Supabase Initialization
+        const supabaseUrl = 'https://qoghsvgbirgrvmlvtcfe.supabase.co/';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvZ2hzdmdiaXJncnZtbHZ0Y2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzI1NzEsImV4cCI6MjA4OTg0ODU3MX0.Em6fUIhpEP84OH85T564F10RXOQ4ME_ZltFaYTGAo9A';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const BUCKET_NAME = 'tyler-files';
+        
+        let currentCategory = 'pictures';
+        let isAdminUnlocked = false;
+        let failedAttempts = 0;
+        const maxAttempts = 10;
+        const correctPassword = "Tyl3rF1les";
 
-            // ADMIN LOGIC STATE
-            let isAdminUnlocked = false;
-            let failedAttempts = 0;
-            const maxAttempts = 10;
-            const correctPassword = "Tyl3rF1les";
+        // DOM Elements
+        const fileInput = document.getElementById('file-input');
+        const uploadStatus = document.getElementById('upload-status');
+        const uploadFolderSelect = document.getElementById('upload-folder-select');
+        const galleryContainer = document.getElementById('gallery-container');
+        const folderLockOverlay = document.getElementById('folder-lock-overlay');
+        const adminDashboardCard = document.getElementById('admin-dashboard-card');
+        const keyModal = document.getElementById('key-modal');
+        const keyModalError = document.getElementById('key-modal-error');
 
-            // DOM ELEMENTS
-            const navCatBtn = document.getElementById('nav-categories-btn');
-            const catDropdown = document.getElementById('categories-dropdown');
-            const navSetBtn = document.getElementById('nav-settings-btn');
-            const setSidebar = document.getElementById('settings-sidebar');
-            const closeSetBtn = document.getElementById('close-settings-btn');
-            const themeBtn = document.getElementById('theme-toggle-btn');
-            
-            const chooseFileBtn = document.getElementById('choose-file-btn');
-            const fileInput = document.getElementById('file-input');
-            const uploadStatus = document.getElementById('upload-status');
-            const uploadFolderSelect = document.getElementById('upload-folder-select');
-            
-            const currentCatLabel = document.getElementById('current-category-label');
-            const galleryTitle = document.getElementById('gallery-title');
-            const galleryContainer = document.getElementById('gallery-container');
-            const lockedOverlay = document.getElementById('locked-overlay');
-            const returnHomeBtn = document.getElementById('return-home-btn');
-            const catButtons = document.querySelectorAll('.cat-btn[data-cat]');
+        // Relative Time Function
+        function timeAgo(dateString) {
+            const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
+            if (seconds < 60) return "Just now";
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+            return `${Math.floor(hours / 24)}d ago`;
+        }
 
-            const adminLoginUI = document.getElementById('admin-login-ui');
-            const adminUnlockedUI = document.getElementById('admin-unlocked-ui');
+        // --- UI TOGGLES ---
+        document.getElementById('nav-categories-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('categories-dropdown').classList.toggle('show'); });
+        window.addEventListener('click', (e) => { if (!document.getElementById('categories-dropdown').contains(e.target) && e.target.id !== 'nav-categories-btn') document.getElementById('categories-dropdown').classList.remove('show'); });
+        document.getElementById('nav-settings-btn').addEventListener('click', () => document.getElementById('settings-sidebar').classList.add('show'));
+        document.getElementById('close-settings-btn').addEventListener('click', () => document.getElementById('settings-sidebar').classList.remove('show'));
+        document.getElementById('theme-toggle-btn').addEventListener('click', () => document.body.classList.toggle('dark-mode'));
+        document.getElementById('return-home-btn').addEventListener('click', () => switchCategoryUI('pictures'));
+
+        function switchCategoryUI(categoryName) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            const targetBtn = document.querySelector(`.cat-btn[data-cat="${categoryName}"]`);
+            if (targetBtn) targetBtn.classList.add('active');
+            currentCategory = categoryName;
+            document.getElementById('current-category-label').innerText = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+            document.getElementById('gallery-title').innerText = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+            uploadFolderSelect.value = categoryName;
+            document.getElementById('categories-dropdown').classList.remove('show');
+            fetchFiles();
+        }
+
+        document.querySelectorAll('.cat-btn[data-cat]').forEach(btn => {
+            btn.addEventListener('click', () => switchCategoryUI(btn.getAttribute('data-cat')));
+        });
+
+        // --- ADMIN LOGIN LOGIC ---
+        document.getElementById('admin-submit-btn').addEventListener('click', () => {
+            if (failedAttempts >= maxAttempts) return;
             const adminInput = document.getElementById('admin-password-input');
-            const adminSubmit = document.getElementById('admin-submit-btn');
-            const adminRemoveBtn = document.getElementById('admin-remove-perms-btn');
-            const adminStatusMsg = document.getElementById('admin-status-msg');
-            const adminDashboardCard = document.getElementById('admin-dashboard-card');
-
-            // --- ADMIN LOGIN & PERMISSION LOGIC ---
-            function unlockAdmin() {
+            const statusMsg = document.getElementById('admin-status-msg');
+            
+            if (adminInput.value === correctPassword) {
                 isAdminUnlocked = true;
-                adminLoginUI.style.display = 'none';
-                adminUnlockedUI.style.display = 'block';
-                adminStatusMsg.innerText = "";
+                document.getElementById('admin-login-ui').style.display = 'none';
+                document.getElementById('admin-unlocked-ui').style.display = 'block';
+                statusMsg.innerText = "";
                 adminDashboardCard.style.display = 'block'; 
                 fetchFiles(); 
                 fetchStorageStats(); 
-            }
-
-            function lockAdmin() {
-                isAdminUnlocked = false;
-                adminLoginUI.style.display = 'block';
-                adminUnlockedUI.style.display = 'none';
+                fetchRecentUploads();
+                checkKeysStatus(); // Load keys into inputs
+            } else {
+                failedAttempts++;
                 adminInput.value = "";
-                failedAttempts = 0;
-                adminInput.disabled = false;
-                adminSubmit.disabled = false;
-                adminStatusMsg.innerText = "Permissions removed.";
-                adminStatusMsg.style.color = "var(--text-muted)";
-                adminDashboardCard.style.display = 'none'; 
-                fetchFiles(); 
-            }
-
-            adminSubmit.addEventListener('click', () => {
-                if (failedAttempts >= maxAttempts) return;
-                if (adminInput.value === correctPassword) {
-                    unlockAdmin();
+                statusMsg.style.color = "#ef4444";
+                if (failedAttempts >= maxAttempts) {
+                    statusMsg.innerText = "Locked! Too many incorrect attempts.";
+                    adminInput.disabled = true;
+                    document.getElementById('admin-submit-btn').disabled = true;
                 } else {
-                    failedAttempts++;
-                    adminInput.value = "";
-                    if (failedAttempts >= maxAttempts) {
-                        adminStatusMsg.style.color = "#ef4444";
-                        adminStatusMsg.innerText = "Locked! Too many incorrect attempts.";
-                        adminInput.disabled = true;
-                        adminSubmit.disabled = true;
-                    } else {
-                        adminStatusMsg.style.color = "#ef4444";
-                        adminStatusMsg.innerText = `Wrong password. ${maxAttempts - failedAttempts} attempts left.`;
-                    }
+                    statusMsg.innerText = `Wrong password. ${maxAttempts - failedAttempts} attempts left.`;
                 }
-            });
+            }
+        });
 
-            adminRemoveBtn.addEventListener('click', lockAdmin);
+        document.getElementById('admin-remove-perms-btn').addEventListener('click', () => {
+            isAdminUnlocked = false;
+            document.getElementById('admin-login-ui').style.display = 'block';
+            document.getElementById('admin-unlocked-ui').style.display = 'none';
+            document.getElementById('admin-password-input').value = "";
+            document.getElementById('admin-status-msg').innerText = "Permissions removed.";
+            document.getElementById('admin-status-msg').style.color = "var(--text-muted)";
+            adminDashboardCard.style.display = 'none'; 
+            fetchFiles(); 
+        });
 
-            // --- RETURN HOME BUTTON (If blocked) ---
-            returnHomeBtn.addEventListener('click', () => {
-                switchCategoryUI('pictures');
-            });
+        // --- RECENT UPLOADS FEATURE ---
+        async function fetchRecentUploads() {
+            if (!isAdminUnlocked) return;
+            const container = document.getElementById('recent-uploads-container');
+            container.innerHTML = '<p style="font-size: 0.8rem; color: var(--text-muted);">Fetching across all folders...</p>';
+            
+            const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
+            let allFiles =[];
 
-            // --- STORAGE CALCULATION LOGIC ---
-            async function fetchStorageStats() {
-                if (!isAdminUnlocked) return;
-                const serverStatusEl = document.getElementById('server-status');
-                serverStatusEl.innerText = "Checking...";
-                serverStatusEl.style.color = "var(--text-main)";
-
-                const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
-                let totalBytes = 0;
-                let breakdown = { pictures: 0, videos: 0, audio: 0, files: 0, admin: 0 };
-                let isHealthy = true;
-
-                for (let cat of categories) {
-                    try {
-                        const { data, error } = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 1000 });
-                        if (error) throw error;
-                        if (data) {
-                            for (let file of data) {
-                                if (file.metadata && file.metadata.size) {
-                                    breakdown[cat] += file.metadata.size;
-                                    totalBytes += file.metadata.size;
-                                }
-                            }
+            // Fetch from all categories simultaneously
+            await Promise.all(categories.map(async (cat) => {
+                const { data } = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 5, sortBy: { column: 'created_at', order: 'desc' } });
+                if (data) {
+                    data.forEach(f => {
+                        if (f.name !== '.emptyFolderPlaceholder') {
+                            allFiles.push({ ...f, category: cat });
                         }
-                    } catch (err) {
-                        isHealthy = false;
-                    }
+                    });
                 }
+            }));
 
-                if (isHealthy) { serverStatusEl.innerText = "🟢 Healthy"; serverStatusEl.style.color = "#10b981"; } 
-                else { serverStatusEl.innerText = "🔴 Offline / Error"; serverStatusEl.style.color = "#ef4444"; }
+            // Sort everything by date globally and take top 7
+            allFiles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const topFiles = allFiles.slice(0, 7);
 
-                const toMB = (bytes) => (bytes / 1048576).toFixed(2);
-                document.getElementById('stat-pictures').innerText = `${toMB(breakdown.pictures)} MB`;
-                document.getElementById('stat-videos').innerText = `${toMB(breakdown.videos)} MB`;
-                document.getElementById('stat-audio').innerText = `${toMB(breakdown.audio)} MB`;
-                document.getElementById('stat-files').innerText = `${toMB(breakdown.files)} MB`;
-                document.getElementById('stat-admin').innerText = `${toMB(breakdown.admin)} MB`;
-
-                const totalMB = (totalBytes / 1048576);
-                document.getElementById('stat-total').innerText = totalMB.toFixed(2);
-
-                const maxMB = 50;
-                let percentage = (totalMB / maxMB) * 100;
-                if (percentage > 100) percentage = 100;
-                const bar = document.getElementById('storage-bar');
-                bar.style.width = `${percentage}%`;
-                if (percentage > 85) bar.style.backgroundColor = "#ef4444";
-                else bar.style.backgroundColor = "var(--accent-purple)";
+            if (topFiles.length === 0) {
+                container.innerHTML = '<p style="font-size: 0.8rem; color: var(--text-muted);">No files found.</p>';
+                return;
             }
 
-            // --- UI TOGGLES ---
-            navCatBtn.addEventListener('click', (e) => { e.stopPropagation(); catDropdown.classList.toggle('show'); });
-            window.addEventListener('click', (e) => { if (!catDropdown.contains(e.target) && e.target !== navCatBtn) catDropdown.classList.remove('show'); });
-            navSetBtn.addEventListener('click', () => setSidebar.classList.add('show'));
-            closeSetBtn.addEventListener('click', () => setSidebar.classList.remove('show'));
-            themeBtn.addEventListener('click', () => document.body.classList.toggle('dark-mode'));
-
-            // --- CATEGORY SWITCHING ---
-            function switchCategoryUI(categoryName) {
-                catButtons.forEach(b => b.classList.remove('active'));
-                const targetBtn = document.querySelector(`.cat-btn[data-cat="${categoryName}"]`);
-                if (targetBtn) targetBtn.classList.add('active');
+            container.innerHTML = '';
+            for (let file of topFiles) {
+                const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`${file.category}/${file.name}`);
                 
-                currentCategory = categoryName;
-                currentCatLabel.innerText = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
-                galleryTitle.innerText = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
-                uploadFolderSelect.value = currentCategory;
-                catDropdown.classList.remove('show');
-                fetchFiles();
+                let imgSrc = '';
+                if (file.category === 'pictures' || file.name.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                    imgSrc = publicUrlData.publicUrl;
+                } else if (file.category === 'videos' || file.name.match(/\.(mp4|webm)$/i)) {
+                    imgSrc = 'https://via.placeholder.com/40x40/5a4fcf/ffffff?text=VID';
+                } else if (file.category === 'audio' || file.name.match(/\.(mp3|wav)$/i)) {
+                    imgSrc = 'https://via.placeholder.com/40x40/10b981/ffffff?text=AUD';
+                } else {
+                    imgSrc = 'https://via.placeholder.com/40x40/6b7280/ffffff?text=DOC';
+                }
+
+                const div = document.createElement('div');
+                div.className = 'recent-upload-item';
+                div.innerHTML = `
+                    <img src="${imgSrc}" alt="thumb">
+                    <div class="recent-upload-info">
+                        <span title="${file.name}">${file.name}</span>
+                        <div class="recent-badge">${file.category.toUpperCase()}</div>
+                    </div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap;">${timeAgo(file.created_at)}</span>
+                `;
+                container.appendChild(div);
             }
+        }
 
-            catButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    switchCategoryUI(btn.getAttribute('data-cat'));
-                });
+        // --- KEY GENERATOR FEATURE ---
+        window.generateRandom = function(inputId) {
+            document.getElementById(inputId).value = Math.random().toString(36).substring(2, 9);
+        }
+
+        window.createKey = async function(slotNumber, inputId) {
+            const val = document.getElementById(inputId).value.trim();
+            if (!val) return alert("Enter a key first!");
+            
+            // Set expiration to 2 hours from now
+            let expDate = new Date();
+            expDate.setHours(expDate.getHours() + 2);
+
+            const { error } = await supabase.from('upload_keys').upsert({
+                slot: slotNumber,
+                key_value: val,
+                expires_at: expDate.toISOString()
             });
 
-            // --- UPLOAD LOGIC ---
-            chooseFileBtn.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
+            if (error) alert("Error saving key: " + error.message);
+            else {
+                document.getElementById(`slot${slotNumber}-status`).innerText = "Active (Expires in 2h)";
+                document.getElementById(`slot${slotNumber}-status`).style.color = "#10b981";
+            }
+        }
 
-                const folder = uploadFolderSelect.value;
-                
-                // Security Check: Attempting to upload to Admin without perms
-                if (folder === 'admin' && !isAdminUnlocked) {
-                    uploadStatus.style.color = '#ef4444';
-                    uploadStatus.innerText = 'ERROR: YOU DO NOT HAVE THE PERMISSIONS NECESSARY';
-                    fileInput.value = ''; // wipe input
-                    return;
-                }
-
-                uploadStatus.style.color = 'var(--text-main)';
-                uploadStatus.innerText = `Uploading '${file.name}'...`;
-                const filePath = `${folder}/${Date.now()}_${file.name}`;
-
-                const { data, error } = await supabase.storage.from(BUCKET_NAME).upload(filePath, file);
-
-                if (error) {
-                    uploadStatus.style.color = '#ef4444';
-                    uploadStatus.innerText = `Upload failed: ${error.message}`;
-                } else {
-                    uploadStatus.style.color = '#10b981';
-                    uploadStatus.innerText = `Successfully uploaded!`;
-                    fileInput.value = ''; 
-                    if (folder === currentCategory) fetchFiles();
-                    if (isAdminUnlocked) fetchStorageStats(); 
-                }
-                setTimeout(() => { uploadStatus.style.color = 'var(--text-main)'; uploadStatus.innerText = 'Select a file to upload'; }, 5000);
-            });
-
-            // --- FETCH & DISPLAY LOGIC ---
-            async function fetchFiles() {
-                // Check Admin viewing perms
-                if (currentCategory === 'admin' && !isAdminUnlocked) {
-                    galleryContainer.style.filter = "blur(10px)";
-                    lockedOverlay.classList.remove('hidden');
-                    return; // Stop fetching files
-                } else {
-                    galleryContainer.style.filter = "none";
-                    lockedOverlay.classList.add('hidden');
-                }
-
-                galleryContainer.innerHTML = '<p style="color: var(--text-muted);">Loading files from Supabase...</p>';
-
-                const { data, error } = await supabase.storage.from(BUCKET_NAME).list(currentCategory, {
-                    limit: 100, sortBy: { column: 'created_at', order: 'desc' },
-                });
-
-                if (error) {
-                    galleryContainer.innerHTML = `<p style="color:red;">Error loading files: ${error.message}</p>`;
-                    return;
-                }
-
-                galleryContainer.innerHTML = '';
-                const validFiles = data.filter(file => file.name !== '.emptyFolderPlaceholder');
-
-                if (validFiles.length === 0) {
-                    galleryContainer.innerHTML = `<p style="color: var(--text-muted);">No items yet. Upload files to see them here.</p>`;
-                    return;
-                }
-
-                for (let file of validFiles) {
-                    const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`${currentCategory}/${file.name}`);
-                    const url = publicUrlData.publicUrl;
+        async function checkKeysStatus() {
+            const { data } = await supabase.from('upload_keys').select('*');
+            if (data) {
+                data.forEach(keyRow => {
+                    const statusEl = document.getElementById(`slot${keyRow.slot}-status`);
+                    const inputEl = document.getElementById(`slot${keyRow.slot}-input`);
+                    inputEl.value = keyRow.key_value;
                     
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'media-item';
-
-                    let mediaContent = '';
-                    if (currentCategory === 'pictures' || (currentCategory === 'admin' && file.name.match(/\.(jpg|jpeg|png|gif)$/i))) {
-                        mediaContent = `<img src="${url}" alt="image loading..." loading="lazy">`;
-                    } else if (currentCategory === 'videos' || (currentCategory === 'admin' && file.name.match(/\.(mp4|webm|ogg)$/i))) {
-                        mediaContent = `<video controls src="${url}"></video>`;
-                    } else if (currentCategory === 'audio' || (currentCategory === 'admin' && file.name.match(/\.(mp3|wav|m4a)$/i))) {
-                        mediaContent = `<div style="height: 150px; display:flex; justify-content:center; align-items:center; background: var(--bg-card); padding: 10px;"><audio controls src="${url}" style="width: 100%; outline: none;"></audio></div>`;
+                    if (new Date(keyRow.expires_at) > new Date()) {
+                        statusEl.innerText = "Active";
+                        statusEl.style.color = "#10b981";
                     } else {
-                        mediaContent = `<div style="height: 150px; background: var(--bg-card); display:flex; justify-content:center; align-items:center; font-size: 3rem;">📄</div>`;
+                        statusEl.innerText = "Expired";
+                        statusEl.style.color = "#ef4444";
                     }
+                });
+            }
+        }
 
-                    itemDiv.innerHTML = `
-                        ${mediaContent}
-                        <div class="media-info" id="info-${file.name.replace(/[^a-zA-Z0-9]/g, '')}">
-                            <span style="font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${file.name}">${file.name}</span>
-                            <a href="${url}" target="_blank">Open Full Size</a>
-                        </div>
-                    `;
+        // --- UPLOAD PROCESS & VERIFICATION ---
+        document.getElementById('choose-file-btn').addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
 
-                    // If Admin is unlocked, add the Red X and Move To Admin buttons!
-                    if (isAdminUnlocked) {
-                        
-                        // 1. Delete Button (Red X)
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.className = 'delete-btn';
-                        deleteBtn.innerText = 'X';
-                        deleteBtn.addEventListener('click', async () => {
-                            const userConfirmed = confirm("Confirm: Are you sure you want to delete this file completely from Supabase?");
-                            if (userConfirmed) {
-                                const filePath = `${currentCategory}/${file.name}`;
-                                const { error: deleteError } = await supabase.storage.from(BUCKET_NAME).remove([filePath]);
-                                if (deleteError) alert("Error deleting file: " + deleteError.message);
-                                else { fetchFiles(); fetchStorageStats(); }
+            const folder = uploadFolderSelect.value;
+            
+            // Check Admin Vault Perms First
+            if (folder === 'admin' && !isAdminUnlocked) {
+                uploadStatus.style.color = '#ef4444';
+                uploadStatus.innerText = 'ERROR: YOU DO NOT HAVE THE PERMISSIONS NECESSARY';
+                fileInput.value = ''; return;
+            }
+
+            // Key Verification for Non-Admins
+            if (!isAdminUnlocked) {
+                const userKey = await promptForUploadKey();
+                if (!userKey) {
+                    fileInput.value = ''; // Cancelled
+                    return; 
+                }
+                
+                // Verify Key in DB
+                uploadStatus.innerText = "Verifying key...";
+                const { data, error } = await supabase.from('upload_keys').select('*').eq('key_value', userKey);
+                
+                const validKey = data?.find(k => new Date(k.expires_at) > new Date());
+                if (!validKey) {
+                    keyModalError.style.display = 'block';
+                    fileInput.value = ''; return; // Failed verification
+                }
+                keyModal.classList.add('hidden'); // Close modal, key is good!
+            }
+
+            // Proceed to upload
+            uploadStatus.style.color = 'var(--text-main)';
+            uploadStatus.innerText = `Uploading '${file.name}'...`;
+            const filePath = `${folder}/${Date.now()}_${file.name}`;
+
+            const { error: uploadError } = await supabase.storage.from(BUCKET_NAME).upload(filePath, file);
+
+            if (uploadError) {
+                uploadStatus.style.color = '#ef4444';
+                uploadStatus.innerText = `Upload failed: ${uploadError.message}`;
+            } else {
+                uploadStatus.style.color = '#10b981';
+                uploadStatus.innerText = `Successfully uploaded!`;
+                fileInput.value = ''; 
+                if (folder === currentCategory) fetchFiles();
+                if (isAdminUnlocked) { fetchStorageStats(); fetchRecentUploads(); }
+            }
+            setTimeout(() => { uploadStatus.style.color = 'var(--text-main)'; uploadStatus.innerText = 'Select a file to upload'; }, 5000);
+        });
+
+        // Function to halt execution and wait for modal input
+        function promptForUploadKey() {
+            return new Promise((resolve) => {
+                keyModal.classList.remove('hidden');
+                keyModalError.style.display = 'none';
+                document.getElementById('upload-key-input').value = "";
+
+                document.getElementById('verify-key-btn').onclick = () => {
+                    resolve(document.getElementById('upload-key-input').value.trim());
+                };
+                document.getElementById('cancel-key-btn').onclick = () => {
+                    keyModal.classList.add('hidden');
+                    resolve(null);
+                };
+            });
+        }
+
+        // --- FETCH FILES & DASHBOARD LOGIC ---
+        async function fetchStorageStats() {
+            if (!isAdminUnlocked) return;
+            const serverStatusEl = document.getElementById('server-status');
+            serverStatusEl.innerText = "Checking..."; serverStatusEl.style.color = "var(--text-main)";
+
+            const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
+            let totalBytes = 0;
+            let breakdown = { pictures: 0, videos: 0, audio: 0, files: 0, admin: 0 };
+            let isHealthy = true;
+
+            for (let cat of categories) {
+                try {
+                    const { data, error } = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 1000 });
+                    if (data) data.forEach(f => { if (f.metadata?.size) { breakdown[cat] += f.metadata.size; totalBytes += f.metadata.size; }});
+                } catch { isHealthy = false; }
+            }
+
+            serverStatusEl.innerText = isHealthy ? "🟢 Healthy" : "🔴 Offline / Error";
+            serverStatusEl.style.color = isHealthy ? "#10b981" : "#ef4444";
+
+            const toMB = (bytes) => (bytes / 1048576).toFixed(2);
+            categories.forEach(cat => document.getElementById(`stat-${cat}`).innerText = `${toMB(breakdown[cat])} MB`);
+            
+            const totalMB = (totalBytes / 1048576);
+            document.getElementById('stat-total').innerText = totalMB.toFixed(2);
+            
+            let percentage = Math.min((totalMB / 50) * 100, 100);
+            const bar = document.getElementById('storage-bar');
+            bar.style.width = `${percentage}%`;
+            bar.style.backgroundColor = percentage > 85 ? "#ef4444" : "var(--accent-purple)";
+        }
+
+        async function fetchFiles() {
+            if (currentCategory === 'admin' && !isAdminUnlocked) {
+                galleryContainer.style.filter = "blur(10px)";
+                folderLockOverlay.classList.remove('hidden');
+                return;
+            } else {
+                galleryContainer.style.filter = "none";
+                folderLockOverlay.classList.add('hidden');
+            }
+
+            galleryContainer.innerHTML = '<p style="color: var(--text-muted);">Loading files from Supabase...</p>';
+            const { data, error } = await supabase.storage.from(BUCKET_NAME).list(currentCategory, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+
+            if (error) { galleryContainer.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; return; }
+
+            galleryContainer.innerHTML = '';
+            const validFiles = data.filter(f => f.name !== '.emptyFolderPlaceholder');
+            if (validFiles.length === 0) { galleryContainer.innerHTML = `<p style="color: var(--text-muted);">No items yet.</p>`; return; }
+
+            for (let file of validFiles) {
+                const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`${currentCategory}/${file.name}`);
+                const url = publicUrlData.publicUrl;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'media-item';
+
+                let mediaContent = '';
+                if (currentCategory === 'pictures' || (currentCategory === 'admin' && file.name.match(/\.(jpg|jpeg|png|gif)$/i))) {
+                    mediaContent = `<img src="${url}" alt="image loading..." loading="lazy">`;
+                } else if (currentCategory === 'videos' || (currentCategory === 'admin' && file.name.match(/\.(mp4|webm|ogg)$/i))) {
+                    mediaContent = `<video controls src="${url}"></video>`;
+                } else if (currentCategory === 'audio' || (currentCategory === 'admin' && file.name.match(/\.(mp3|wav|m4a)$/i))) {
+                    mediaContent = `<div style="height: 150px; display:flex; justify-content:center; align-items:center; background: var(--bg-card); padding: 10px;"><audio controls src="${url}" style="width: 100%; outline: none;"></audio></div>`;
+                } else {
+                    mediaContent = `<div style="height: 150px; background: var(--bg-card); display:flex; justify-content:center; align-items:center; font-size: 3rem;">📄</div>`;
+                }
+
+                itemDiv.innerHTML = `
+                    ${mediaContent}
+                    <div class="media-info">
+                        <span style="font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${file.name}">${file.name}</span>
+                        <a href="${url}" target="_blank">Open Full Size</a>
+                    </div>
+                `;
+
+                if (isAdminUnlocked) {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.innerText = 'X';
+                    deleteBtn.addEventListener('click', async () => {
+                        if (confirm("Confirm: Delete this file completely?")) {
+                            await supabase.storage.from(BUCKET_NAME).remove([`${currentCategory}/${file.name}`]);
+                            fetchFiles(); fetchStorageStats(); fetchRecentUploads();
+                        }
+                    });
+                    itemDiv.appendChild(deleteBtn);
+
+                    if (currentCategory !== 'admin') {
+                        const moveBtn = document.createElement('button');
+                        moveBtn.className = 'move-admin-btn';
+                        moveBtn.innerText = 'Move To Admin?';
+                        moveBtn.addEventListener('click', async () => {
+                            if (confirm("Confirm: Move this file to the Admin category?")) {
+                                await supabase.storage.from(BUCKET_NAME).move(`${currentCategory}/${file.name}`, `admin/${file.name}`);
+                                fetchFiles(); fetchStorageStats();
                             }
                         });
-                        itemDiv.appendChild(deleteBtn);
-
-                        // 2. Move To Admin Button (Only if we aren't already in Admin)
-                        if (currentCategory !== 'admin') {
-                            const moveBtn = document.createElement('button');
-                            moveBtn.className = 'move-admin-btn';
-                            moveBtn.innerText = 'Move To Admin?';
-                            moveBtn.addEventListener('click', async () => {
-                                const userConfirmed = confirm("Confirm: Move this file to the Admin category?");
-                                if (userConfirmed) {
-                                    const oldPath = `${currentCategory}/${file.name}`;
-                                    const newPath = `admin/${file.name}`;
-                                    
-                                    // Move file in Supabase
-                                    const { data, error } = await supabase.storage.from(BUCKET_NAME).move(oldPath, newPath);
-                                    
-                                    if (error) {
-                                        alert("Error moving file: " + error.message);
-                                    } else {
-                                        fetchFiles(); // Refresh current gallery (file will disappear)
-                                        fetchStorageStats(); // Update storage numbers
-                                    }
-                                }
-                            });
-                            // Append right under the file name in the info box
-                            itemDiv.querySelector('.media-info').appendChild(moveBtn);
-                        }
+                        itemDiv.querySelector('.media-info').appendChild(moveBtn);
                     }
-
-                    galleryContainer.appendChild(itemDiv);
                 }
+                galleryContainer.appendChild(itemDiv);
             }
+        }
 
-            fetchFiles(); // Initial load
-        });
+        fetchFiles(); // Initial load
     </script>
 </body>
 </html>
