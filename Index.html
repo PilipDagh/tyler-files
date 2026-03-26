@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tyler Files</title>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        /* --- CSS VARIABLES FOR THEME --- */
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --accent-purple: #5a4fcf;
+            --accent-purple-hover: #4a40b0;
+            --btn-bg: #ffffff;
+            --btn-border: #d1d5db;
+            --btn-hover: #f9fafb;
+            --progress-bg: #e5e7eb;
+        }
+
+        .dark-mode {
+            --bg-body: #111827;
+            --bg-card: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-color: #374151;
+            --accent-purple: #6b5ce6;
+            --accent-purple-hover: #7b6df2;
+            --btn-bg: #374151;
+            --btn-border: #4b5563;
+            --btn-hover: #4b5563;
+            --progress-bg: #374151;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.3s, color 0.3s; padding: 20px; }
+
+        /* --- HEADER --- */
+        .header { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px 24px; display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 20px auto; position: relative; }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .logo-box { background-color: var(--accent-purple); color: white; font-weight: bold; font-size: 1.2rem; height: 48px; width: 48px; display: flex; justify-content: center; align-items: center; border-radius: 10px; }
+        .header-text h1 { font-size: 1.25rem; font-weight: 600; }
+        .header-text p { font-size: 0.85rem; color: var(--text-muted); }
+        .header-buttons { display: flex; gap: 10px; }
+        
+        button { background-color: var(--btn-bg); color: var(--text-main); border: 1px solid var(--btn-border); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+        button:hover { background-color: var(--btn-hover); }
+
+        /* --- DROPDOWN MENUS --- */
+        #categories-dropdown { position: absolute; top: 75px; right: 80px; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; width: 300px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 1000; visibility: hidden; opacity: 0; transform: translateY(-10px); transition: all 0.3s ease; }
+        #categories-dropdown.show { visibility: visible; opacity: 1; transform: translateY(0); }
+        .cat-btn { justify-content: center; font-size: 0.85rem; padding: 10px 5px; }
+        .cat-btn.active { border-color: var(--accent-purple); color: var(--accent-purple); }
+
+        /* --- SETTINGS SIDEBAR --- */
+        #settings-sidebar { position: fixed; top: 0; right: -400px; width: 350px; height: 100vh; background-color: var(--bg-card); border-left: 1px solid var(--border-color); box-shadow: -4px 0 15px rgba(0,0,0,0.05); padding: 24px; transition: right 0.3s ease; z-index: 2000; display: flex; flex-direction: column; overflow-y: auto;}
+        #settings-sidebar.show { right: 0; }
+        .close-btn { align-self: flex-end; border: none; background: transparent; font-size: 1.2rem; margin-bottom: 20px;}
+        .credits { margin-top: auto; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 20px; line-height: 1.5; }
+
+        /* --- MAIN LAYOUT GRID --- */
+        .main-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media (max-width: 800px) { .main-container { grid-template-columns: 1fr; } }
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+        .card h2 { font-size: 1.25rem; margin-bottom: 10px; }
+        .card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
+
+        /* --- UPLOAD AREA --- */
+        .upload-box { border: 2px dashed var(--btn-border); border-radius: 12px; padding: 40px 20px; text-align: center; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .btn-purple { background-color: var(--accent-purple); color: white; border: none; padding: 10px 20px; }
+        .btn-purple:hover { background-color: var(--accent-purple-hover); color: white;}
+        .upload-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.9rem; }
+        select, input[type="text"], input[type="password"] { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; outline: none; }
+
+        /* --- GALLERY GRID & ADMIN DELETE BTN --- */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .media-item { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: var(--bg-body); display: flex; flex-direction: column; position: relative; }
+        .media-item img, .media-item video { width: 100%; height: 150px; object-fit: cover; background: #000; }
+        .media-info { padding: 10px; font-size: 0.8rem; word-break: break-all; display: flex; flex-direction: column; gap: 5px; }
+        .media-info a { color: var(--accent-purple); text-decoration: none; font-weight: 500; }
+        .widget-btn { width: 100%; justify-content: flex-start; margin-bottom: 10px; }
+
+        .delete-btn { position: absolute; top: 8px; right: 8px; background-color: #dc2626; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: bold; font-size: 1rem; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; padding: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .delete-btn:hover { background-color: #991b1b; }
+
+        /* --- ADMIN DASHBOARD ELEMENTS --- */
+        .admin-stat-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
+        .progress-bar-container { background-color: var(--progress-bg); border-radius: 10px; height: 10px; margin-top: 15px; overflow: hidden; width: 100%; }
+        #storage-bar { background-color: var(--accent-purple); width: 0%; height: 100%; transition: width 0.5s ease; }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <!-- TOP HEADER -->
+    <header class="header">
+        <div class="logo-section">
+            <div class="logo-box">TF</div>
+            <div class="header-text">
+                <h1>Tyler Files</h1>
+                <p>Cloud-backed media & notes</p>
+            </div>
+        </div>
+        <div class="header-buttons">
+            <button id="nav-categories-btn">☰ Categories</button>
+            <button id="nav-settings-btn">⚙</button>
+        </div>
+
+        <div id="categories-dropdown">
+            <button class="cat-btn active" data-cat="pictures">Pictures</button>
+            <button class="cat-btn" data-cat="videos">Videos</button>
+            <button class="cat-btn" data-cat="files">Files</button>
+            <!-- REPLACED BLANK 1 WITH AUDIO -->
+            <button class="cat-btn" data-cat="audio">Audio</button>
+            <button class="cat-btn" disabled>Blank 2</button>
+            <button class="cat-btn" disabled>Blank 3</button>
+            <button class="cat-btn" disabled>Blank 4</button>
+            <button class="cat-btn" disabled>Blank 5</button>
+            <button class="cat-btn" disabled>Blank 6</button>
+        </div>
+    </header>
+
+    <!-- SETTINGS SIDEBAR -->
+    <div id="settings-sidebar">
+        <button class="close-btn" id="close-settings-btn">✖ Close</button>
+        <h2>Settings</h2>
+        <br>
+        <button id="theme-toggle-btn" style="width: 100%; justify-content: center;">Toggle Dark/Light Mode</button>
+        
+        <!-- ADMIN ACCESS SECTION -->
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+            <h3 style="margin-bottom: 10px; font-size: 1.1rem;">Admin Access</h3>
+            
+            <!-- Login State -->
+            <div id="admin-login-ui">
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Enter code to enable advanced features.</p>
+                <input type="password" id="admin-password-input" placeholder="Admin Code" style="width: 100%; margin-bottom: 10px;">
+                <button id="admin-submit-btn" class="btn-purple" style="width: 100%; justify-content: center;">Unlock</button>
+            </div>
+
+            <!-- Unlocked State (Hidden by default) -->
+            <div id="admin-unlocked-ui" style="display: none;">
+                <p style="font-size: 0.85rem; color: #10b981; margin-bottom: 10px; font-weight: bold;">✓ Admin Unlocked</p>
+                <button id="admin-remove-perms-btn" style="width: 100%; justify-content: center; background-color: #ef4444; color: white; border: none;">Remove Perms</button>
+            </div>
+            
+            <p id="admin-status-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: bold;"></p>
+        </div>
+
+        <div class="credits">
+            <p><strong>Made by Julian R. D. and Kylin W. H.</strong></p><br>
+            <p><em>"Direct Words From Tyler B. A. The Only Reason He Says Everything Is Wrong Is Because He Is Scared Of The Consequences Of His Actions/Words"</em></p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-container">
+        
+        <!-- LEFT COLUMN -->
+        <div class="left-col">
+            <div class="card">
+                <h2>Upload to Tyler Files</h2>
+                <p>Add pictures, videos, audio, or files.</p>
+                
+                <div class="upload-box">
+                    <span id="upload-status" style="font-weight: bold;">Select a file to upload</span>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="file" id="file-input" style="display: none;">
+                        <button class="btn-purple" id="choose-file-btn">Choose files</button>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Supported: images, mp4, mp3/wav, plain text.</p>
+                </div>
+
+                <div class="upload-controls">
+                    <div>
+                        Current category: <br>
+                        <strong id="current-category-label">Pictures</strong>
+                    </div>
+                    <div>
+                        Upload into folder: 
+                        <select id="upload-folder-select">
+                            <option value="pictures">Pictures</option>
+                            <option value="videos">Videos</option>
+                            <option value="audio">Audio</option>
+                            <option value="files">Files</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 id="gallery-title">Pictures</h2>
+                <div id="gallery-container" class="gallery-grid">
+                    <p style="color: var(--text-muted);">Loading files...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="right-col">
+
+            <!-- ADMIN DASHBOARD WIDGET (Hidden until unlocked) -->
+            <div class="card" id="admin-dashboard-card" style="display: none; border-color: var(--accent-purple);">
+                <h2 style="color: var(--accent-purple);">Admin Dashboard</h2>
+                
+                <div style="margin-bottom: 15px; font-size: 0.9rem;">
+                    <strong>Supabase Status: </strong> 
+                    <span id="server-status">Checking...</span>
+                </div>
+                
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 15px;">
+                
+                <h3 style="font-size: 1rem; margin-bottom: 10px;">Storage Usage</h3>
+                <div class="admin-stat-row"><span>Pictures:</span> <span id="stat-pictures">0.00 MB</span></div>
+                <div class="admin-stat-row"><span>Videos:</span> <span id="stat-videos">0.00 MB</span></div>
+                <div class="admin-stat-row"><span>Audio:</span> <span id="stat-audio">0.00 MB</span></div>
+                <div class="admin-stat-row"><span>Files:</span> <span id="stat-files">0.00 MB</span></div>
+                
+                <div class="progress-bar-container">
+                    <div id="storage-bar"></div>
+                </div>
+                <p style="text-align: right; font-size: 0.8rem; margin-top: 8px; font-weight: bold;">
+                    <span id="stat-total">0.00</span> / 50.00 MB Max
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>Quick actions</h2>
+                <button class="widget-btn" onclick="alert('Feature coming soon!')">Delete all Tyler Files</button>
+                <button class="widget-btn" onclick="alert('Feature coming soon!')">Export all (JSON)</button>
+                <button class="widget-btn" onclick="alert('Feature coming soon!')">Import JSON</button>
+            </div>
+
+            <div class="card">
+                <h2>About</h2>
+                <p>This app uses Supabase Storage. Files are separated into category folders dynamically.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // SUPABASE INITIALIZATION
+            const supabaseUrl = 'https://qoghsvgbirgrvmlvtcfe.supabase.co/';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvZ2hzdmdiaXJncnZtbHZ0Y2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzI1NzEsImV4cCI6MjA4OTg0ODU3MX0.Em6fUIhpEP84OH85T564F10RXOQ4ME_ZltFaYTGAo9A';
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            const BUCKET_NAME = 'tyler-files';
+            
+            let currentCategory = 'pictures';
+
+            // ADMIN LOGIC STATE
+            let isAdminUnlocked = false;
+            let failedAttempts = 0;
+            const maxAttempts = 10;
+            const correctPassword = "Tyl3rF1les";
+
+            // DOM ELEMENTS
+            const navCatBtn = document.getElementById('nav-categories-btn');
+            const catDropdown = document.getElementById('categories-dropdown');
+            const navSetBtn = document.getElementById('nav-settings-btn');
+            const setSidebar = document.getElementById('settings-sidebar');
+            const closeSetBtn = document.getElementById('close-settings-btn');
+            const themeBtn = document.getElementById('theme-toggle-btn');
+            
+            const chooseFileBtn = document.getElementById('choose-file-btn');
+            const fileInput = document.getElementById('file-input');
+            const uploadStatus = document.getElementById('upload-status');
+            const uploadFolderSelect = document.getElementById('upload-folder-select');
+            
+            const currentCatLabel = document.getElementById('current-category-label');
+            const galleryTitle = document.getElementById('gallery-title');
+            const galleryContainer = document.getElementById('gallery-container');
+            const catButtons = document.querySelectorAll('.cat-btn[data-cat]');
+
+            // Admin DOM Elements
+            const adminLoginUI = document.getElementById('admin-login-ui');
+            const adminUnlockedUI = document.getElementById('admin-unlocked-ui');
+            const adminInput = document.getElementById('admin-password-input');
+            const adminSubmit = document.getElementById('admin-submit-btn');
+            const adminRemoveBtn = document.getElementById('admin-remove-perms-btn');
+            const adminStatusMsg = document.getElementById('admin-status-msg');
+            const adminDashboardCard = document.getElementById('admin-dashboard-card');
+
+            // --- ADMIN LOGIN & PERMISSION LOGIC ---
+            function unlockAdmin() {
+                isAdminUnlocked = true;
+                adminLoginUI.style.display = 'none';
+                adminUnlockedUI.style.display = 'block';
+                adminStatusMsg.innerText = "";
+                adminDashboardCard.style.display = 'block'; // Show Dashboard
+                fetchFiles(); // Reload gallery to show Red Xs
+                fetchStorageStats(); // Load live dashboard data
+            }
+
+            function lockAdmin() {
+                isAdminUnlocked = false;
+                adminLoginUI.style.display = 'block';
+                adminUnlockedUI.style.display = 'none';
+                adminInput.value = "";
+                failedAttempts = 0;
+                adminInput.disabled = false;
+                adminSubmit.disabled = false;
+                adminStatusMsg.innerText = "Permissions removed.";
+                adminStatusMsg.style.color = "var(--text-muted)";
+                adminDashboardCard.style.display = 'none'; // Hide Dashboard
+                fetchFiles(); // Reload gallery to remove Red Xs
+            }
+
+            adminSubmit.addEventListener('click', () => {
+                if (failedAttempts >= maxAttempts) return;
+                if (adminInput.value === correctPassword) {
+                    unlockAdmin();
+                } else {
+                    failedAttempts++;
+                    adminInput.value = "";
+                    if (failedAttempts >= maxAttempts) {
+                        adminStatusMsg.style.color = "#ef4444";
+                        adminStatusMsg.innerText = "Locked! Too many incorrect attempts.";
+                        adminInput.disabled = true;
+                        adminSubmit.disabled = true;
+                    } else {
+                        adminStatusMsg.style.color = "#ef4444";
+                        adminStatusMsg.innerText = `Wrong password. ${maxAttempts - failedAttempts} attempts left.`;
+                    }
+                }
+            });
+
+            adminRemoveBtn.addEventListener('click', () => {
+                lockAdmin();
+            });
+
+            // --- STORAGE CALCULATION LOGIC (DASHBOARD) ---
+            async function fetchStorageStats() {
+                if (!isAdminUnlocked) return;
+                
+                const serverStatusEl = document.getElementById('server-status');
+                serverStatusEl.innerText = "Checking...";
+                serverStatusEl.style.color = "var(--text-main)";
+
+                const categories =['pictures', 'videos', 'audio', 'files'];
+                let totalBytes = 0;
+                let breakdown = { pictures: 0, videos: 0, audio: 0, files: 0 };
+                let isHealthy = true;
+
+                for (let cat of categories) {
+                    try {
+                        const { data, error } = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 1000 });
+                        if (error) throw error;
+                        
+                        if (data) {
+                            for (let file of data) {
+                                if (file.metadata && file.metadata.size) {
+                                    breakdown[cat] += file.metadata.size;
+                                    totalBytes += file.metadata.size;
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.error("Health check error:", err);
+                        isHealthy = false;
+                    }
+                }
+
+                // Update Server Status
+                if (isHealthy) {
+                    serverStatusEl.innerText = "🟢 Healthy";
+                    serverStatusEl.style.color = "#10b981";
+                } else {
+                    serverStatusEl.innerText = "🔴 Offline / Error";
+                    serverStatusEl.style.color = "#ef4444";
+                }
+
+                // Convert bytes to MB (1 MB = 1048576 bytes)
+                const toMB = (bytes) => (bytes / 1048576).toFixed(2);
+                
+                document.getElementById('stat-pictures').innerText = `${toMB(breakdown.pictures)} MB`;
+                document.getElementById('stat-videos').innerText = `${toMB(breakdown.videos)} MB`;
+                document.getElementById('stat-audio').innerText = `${toMB(breakdown.audio)} MB`;
+                document.getElementById('stat-files').innerText = `${toMB(breakdown.files)} MB`;
+
+                const totalMB = (totalBytes / 1048576);
+                document.getElementById('stat-total').innerText = totalMB.toFixed(2);
+
+                // Update Progress Bar (Max 50MB)
+                const maxMB = 50;
+                let percentage = (totalMB / maxMB) * 100;
+                if (percentage > 100) percentage = 100;
+                
+                const bar = document.getElementById('storage-bar');
+                bar.style.width = `${percentage}%`;
+                
+                // Turn bar red if getting close to limit
+                if (percentage > 85) bar.style.backgroundColor = "#ef4444";
+                else bar.style.backgroundColor = "var(--accent-purple)";
+            }
+
+            // --- UI TOGGLES ---
+            navCatBtn.addEventListener('click', (e) => { e.stopPropagation(); catDropdown.classList.toggle('show'); });
+            window.addEventListener('click', (e) => { if (!catDropdown.contains(e.target) && e.target !== navCatBtn) catDropdown.classList.remove('show'); });
+            navSetBtn.addEventListener('click', () => setSidebar.classList.add('show'));
+            closeSetBtn.addEventListener('click', () => setSidebar.classList.remove('show'));
+            themeBtn.addEventListener('click', () => document.body.classList.toggle('dark-mode'));
+
+            // --- CATEGORY SWITCHING ---
+            catButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    catButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCategory = btn.getAttribute('data-cat');
+                    currentCatLabel.innerText = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+                    galleryTitle.innerText = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+                    uploadFolderSelect.value = currentCategory;
+                    catDropdown.classList.remove('show');
+                    fetchFiles();
+                });
+            });
+
+            // --- UPLOAD LOGIC ---
+            chooseFileBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const folder = uploadFolderSelect.value;
+                uploadStatus.style.color = 'var(--text-main)';
+                uploadStatus.innerText = `Uploading '${file.name}'...`;
+                const filePath = `${folder}/${Date.now()}_${file.name}`;
+
+                const { data, error } = await supabase.storage.from(BUCKET_NAME).upload(filePath, file);
+
+                if (error) {
+                    uploadStatus.style.color = '#ef4444';
+                    uploadStatus.innerText = `Upload failed: ${error.message}`;
+                } else {
+                    uploadStatus.style.color = '#10b981';
+                    uploadStatus.innerText = `Successfully uploaded!`;
+                    fileInput.value = ''; 
+                    if (folder === currentCategory) fetchFiles();
+                    if (isAdminUnlocked) fetchStorageStats(); // Update dashboard live
+                }
+                setTimeout(() => { uploadStatus.style.color = 'var(--text-main)'; uploadStatus.innerText = 'Select a file to upload'; }, 5000);
+            });
+
+            // --- FETCH & DISPLAY LOGIC ---
+            async function fetchFiles() {
+                galleryContainer.innerHTML = '<p style="color: var(--text-muted);">Loading files from Supabase...</p>';
+
+                const { data, error } = await supabase.storage.from(BUCKET_NAME).list(currentCategory, {
+                    limit: 100, sortBy: { column: 'created_at', order: 'desc' },
+                });
+
+                if (error) {
+                    galleryContainer.innerHTML = `<p style="color:red;">Error loading files: ${error.message}</p>`;
+                    return;
+                }
+
+                galleryContainer.innerHTML = '';
+                const validFiles = data.filter(file => file.name !== '.emptyFolderPlaceholder');
+
+                if (validFiles.length === 0) {
+                    galleryContainer.innerHTML = `<p style="color: var(--text-muted);">No items yet. Upload files to see them here.</p>`;
+                    return;
+                }
+
+                for (let file of validFiles) {
+                    const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`${currentCategory}/${file.name}`);
+                    const url = publicUrlData.publicUrl;
+                    
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'media-item';
+
+                    let mediaContent = '';
+                    if (currentCategory === 'pictures') {
+                        mediaContent = `<img src="${url}" alt="image loading..." loading="lazy">`;
+                    } else if (currentCategory === 'videos') {
+                        mediaContent = `<video controls src="${url}"></video>`;
+                    } else if (currentCategory === 'audio') {
+                        mediaContent = `<div style="height: 150px; display:flex; justify-content:center; align-items:center; background: var(--bg-card); padding: 10px;"><audio controls src="${url}" style="width: 100%; outline: none;"></audio></div>`;
+                    } else {
+                        mediaContent = `<div style="height: 150px; background: var(--bg-card); display:flex; justify-content:center; align-items:center; font-size: 3rem;">📄</div>`;
+                    }
+
+                    itemDiv.innerHTML = `
+                        ${mediaContent}
+                        <div class="media-info">
+                            <span style="font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${file.name}">${file.name}</span>
+                            <a href="${url}" target="_blank">Open Full Size</a>
+                        </div>
+                    `;
+
+                    // If Admin is unlocked, add the Red X delete button
+                    if (isAdminUnlocked) {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.innerText = 'X';
+                        
+                        deleteBtn.addEventListener('click', async () => {
+                            const userConfirmed = confirm("Confirm: Are you sure you want to delete this file completely from Supabase?");
+                            if (userConfirmed) {
+                                const filePath = `${currentCategory}/${file.name}`;
+                                const { error: deleteError } = await supabase.storage.from(BUCKET_NAME).remove([filePath]);
+                                
+                                if (deleteError) {
+                                    alert("Error deleting file: " + deleteError.message);
+                                } else {
+                                    fetchFiles(); // Refresh gallery
+                                    fetchStorageStats(); // Update dashboard live
+                                }
+                            }
+                        });
+
+                        itemDiv.appendChild(deleteBtn);
+                    }
+
+                    galleryContainer.appendChild(itemDiv);
+                }
+            }
+
+            fetchFiles(); // Initial load
+        });
+    </script>
+</body>
+</html>
