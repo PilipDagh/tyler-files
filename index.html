@@ -78,8 +78,8 @@
         .upload-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.9rem; }
         select, input[type="text"], input[type="password"] { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; outline: none; }
 
-        /* --- GALLERY GRID & ADMIN DELETE BTN --- */
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        /* --- GALLERY GRID & ADMIN UI ELEMENTS --- */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; transition: filter 0.3s ease;}
         .media-item { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: var(--bg-body); display: flex; flex-direction: column; position: relative; }
         .media-item img, .media-item video { width: 100%; height: 150px; object-fit: cover; background: #000; }
         .media-info { padding: 10px; font-size: 0.8rem; word-break: break-all; display: flex; flex-direction: column; gap: 5px; }
@@ -88,6 +88,13 @@
 
         .delete-btn { position: absolute; top: 8px; right: 8px; background-color: #dc2626; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: bold; font-size: 1rem; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; padding: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         .delete-btn:hover { background-color: #991b1b; }
+        
+        .move-admin-btn { background-color: #374151; color: white; border: none; padding: 5px 8px; border-radius: 5px; font-size: 0.75rem; cursor: pointer; margin-top: 5px; width: 100%; justify-content: center;}
+        .move-admin-btn:hover { background-color: #1f2937; }
+
+        /* Locked Admin Overlay */
+        .locked-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; z-index: 50; text-align: center; padding: 20px; }
+        .locked-overlay.hidden { display: none; }
 
         /* --- ADMIN DASHBOARD ELEMENTS --- */
         .admin-stat-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
@@ -115,9 +122,8 @@
             <button class="cat-btn active" data-cat="pictures">Pictures</button>
             <button class="cat-btn" data-cat="videos">Videos</button>
             <button class="cat-btn" data-cat="files">Files</button>
-            <!-- REPLACED BLANK 1 WITH AUDIO -->
             <button class="cat-btn" data-cat="audio">Audio</button>
-            <button class="cat-btn" disabled>Blank 2</button>
+            <button class="cat-btn" data-cat="admin" style="color: #ef4444; border-color: #ef4444;">Admin 🔒</button>
             <button class="cat-btn" disabled>Blank 3</button>
             <button class="cat-btn" disabled>Blank 4</button>
             <button class="cat-btn" disabled>Blank 5</button>
@@ -136,14 +142,12 @@
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
             <h3 style="margin-bottom: 10px; font-size: 1.1rem;">Admin Access</h3>
             
-            <!-- Login State -->
             <div id="admin-login-ui">
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Enter code to enable advanced features.</p>
                 <input type="password" id="admin-password-input" placeholder="Admin Code" style="width: 100%; margin-bottom: 10px;">
                 <button id="admin-submit-btn" class="btn-purple" style="width: 100%; justify-content: center;">Unlock</button>
             </div>
 
-            <!-- Unlocked State (Hidden by default) -->
             <div id="admin-unlocked-ui" style="display: none;">
                 <p style="font-size: 0.85rem; color: #10b981; margin-bottom: 10px; font-weight: bold;">✓ Admin Unlocked</p>
                 <button id="admin-remove-perms-btn" style="width: 100%; justify-content: center; background-color: #ef4444; color: white; border: none;">Remove Perms</button>
@@ -188,15 +192,24 @@
                             <option value="videos">Videos</option>
                             <option value="audio">Audio</option>
                             <option value="files">Files</option>
+                            <option value="admin">Admin 🔒</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" style="position: relative; min-height: 300px;">
                 <h2 id="gallery-title">Pictures</h2>
+                
                 <div id="gallery-container" class="gallery-grid">
                     <p style="color: var(--text-muted);">Loading files...</p>
+                </div>
+
+                <!-- Loecked Overlay for Admin Folder -->
+                <div id="locked-overlay" class="locked-overlay hidden">
+                    <h3 style="color: #ef4444; font-size: 1.5rem; margin-bottom: 10px;">Access Denied</h3>
+                    <p style="color: white; margin-bottom: 20px;">Return Back To Home, No Permissions Found</p>
+                    <button id="return-home-btn" class="btn-purple">Return To Home</button>
                 </div>
             </div>
         </div>
@@ -204,7 +217,7 @@
         <!-- RIGHT COLUMN -->
         <div class="right-col">
 
-            <!-- ADMIN DASHBOARD WIDGET (Hidden until unlocked) -->
+            <!-- ADMIN DASHBOARD WIDGET -->
             <div class="card" id="admin-dashboard-card" style="display: none; border-color: var(--accent-purple);">
                 <h2 style="color: var(--accent-purple);">Admin Dashboard</h2>
                 
@@ -220,6 +233,7 @@
                 <div class="admin-stat-row"><span>Videos:</span> <span id="stat-videos">0.00 MB</span></div>
                 <div class="admin-stat-row"><span>Audio:</span> <span id="stat-audio">0.00 MB</span></div>
                 <div class="admin-stat-row"><span>Files:</span> <span id="stat-files">0.00 MB</span></div>
+                <div class="admin-stat-row" style="color: var(--accent-purple); font-weight: bold;"><span>Admin:</span> <span id="stat-admin">0.00 MB</span></div>
                 
                 <div class="progress-bar-container">
                     <div id="storage-bar"></div>
@@ -277,9 +291,10 @@
             const currentCatLabel = document.getElementById('current-category-label');
             const galleryTitle = document.getElementById('gallery-title');
             const galleryContainer = document.getElementById('gallery-container');
+            const lockedOverlay = document.getElementById('locked-overlay');
+            const returnHomeBtn = document.getElementById('return-home-btn');
             const catButtons = document.querySelectorAll('.cat-btn[data-cat]');
 
-            // Admin DOM Elements
             const adminLoginUI = document.getElementById('admin-login-ui');
             const adminUnlockedUI = document.getElementById('admin-unlocked-ui');
             const adminInput = document.getElementById('admin-password-input');
@@ -294,9 +309,9 @@
                 adminLoginUI.style.display = 'none';
                 adminUnlockedUI.style.display = 'block';
                 adminStatusMsg.innerText = "";
-                adminDashboardCard.style.display = 'block'; // Show Dashboard
-                fetchFiles(); // Reload gallery to show Red Xs
-                fetchStorageStats(); // Load live dashboard data
+                adminDashboardCard.style.display = 'block'; 
+                fetchFiles(); 
+                fetchStorageStats(); 
             }
 
             function lockAdmin() {
@@ -309,8 +324,8 @@
                 adminSubmit.disabled = false;
                 adminStatusMsg.innerText = "Permissions removed.";
                 adminStatusMsg.style.color = "var(--text-muted)";
-                adminDashboardCard.style.display = 'none'; // Hide Dashboard
-                fetchFiles(); // Reload gallery to remove Red Xs
+                adminDashboardCard.style.display = 'none'; 
+                fetchFiles(); 
             }
 
             adminSubmit.addEventListener('click', () => {
@@ -332,28 +347,29 @@
                 }
             });
 
-            adminRemoveBtn.addEventListener('click', () => {
-                lockAdmin();
+            adminRemoveBtn.addEventListener('click', lockAdmin);
+
+            // --- RETURN HOME BUTTON (If blocked) ---
+            returnHomeBtn.addEventListener('click', () => {
+                switchCategoryUI('pictures');
             });
 
-            // --- STORAGE CALCULATION LOGIC (DASHBOARD) ---
+            // --- STORAGE CALCULATION LOGIC ---
             async function fetchStorageStats() {
                 if (!isAdminUnlocked) return;
-                
                 const serverStatusEl = document.getElementById('server-status');
                 serverStatusEl.innerText = "Checking...";
                 serverStatusEl.style.color = "var(--text-main)";
 
-                const categories =['pictures', 'videos', 'audio', 'files'];
+                const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
                 let totalBytes = 0;
-                let breakdown = { pictures: 0, videos: 0, audio: 0, files: 0 };
+                let breakdown = { pictures: 0, videos: 0, audio: 0, files: 0, admin: 0 };
                 let isHealthy = true;
 
                 for (let cat of categories) {
                     try {
                         const { data, error } = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 1000 });
                         if (error) throw error;
-                        
                         if (data) {
                             for (let file of data) {
                                 if (file.metadata && file.metadata.size) {
@@ -363,40 +379,28 @@
                             }
                         }
                     } catch (err) {
-                        console.error("Health check error:", err);
                         isHealthy = false;
                     }
                 }
 
-                // Update Server Status
-                if (isHealthy) {
-                    serverStatusEl.innerText = "🟢 Healthy";
-                    serverStatusEl.style.color = "#10b981";
-                } else {
-                    serverStatusEl.innerText = "🔴 Offline / Error";
-                    serverStatusEl.style.color = "#ef4444";
-                }
+                if (isHealthy) { serverStatusEl.innerText = "🟢 Healthy"; serverStatusEl.style.color = "#10b981"; } 
+                else { serverStatusEl.innerText = "🔴 Offline / Error"; serverStatusEl.style.color = "#ef4444"; }
 
-                // Convert bytes to MB (1 MB = 1048576 bytes)
                 const toMB = (bytes) => (bytes / 1048576).toFixed(2);
-                
                 document.getElementById('stat-pictures').innerText = `${toMB(breakdown.pictures)} MB`;
                 document.getElementById('stat-videos').innerText = `${toMB(breakdown.videos)} MB`;
                 document.getElementById('stat-audio').innerText = `${toMB(breakdown.audio)} MB`;
                 document.getElementById('stat-files').innerText = `${toMB(breakdown.files)} MB`;
+                document.getElementById('stat-admin').innerText = `${toMB(breakdown.admin)} MB`;
 
                 const totalMB = (totalBytes / 1048576);
                 document.getElementById('stat-total').innerText = totalMB.toFixed(2);
 
-                // Update Progress Bar (Max 50MB)
                 const maxMB = 50;
                 let percentage = (totalMB / maxMB) * 100;
                 if (percentage > 100) percentage = 100;
-                
                 const bar = document.getElementById('storage-bar');
                 bar.style.width = `${percentage}%`;
-                
-                // Turn bar red if getting close to limit
                 if (percentage > 85) bar.style.backgroundColor = "#ef4444";
                 else bar.style.backgroundColor = "var(--accent-purple)";
             }
@@ -409,16 +413,22 @@
             themeBtn.addEventListener('click', () => document.body.classList.toggle('dark-mode'));
 
             // --- CATEGORY SWITCHING ---
+            function switchCategoryUI(categoryName) {
+                catButtons.forEach(b => b.classList.remove('active'));
+                const targetBtn = document.querySelector(`.cat-btn[data-cat="${categoryName}"]`);
+                if (targetBtn) targetBtn.classList.add('active');
+                
+                currentCategory = categoryName;
+                currentCatLabel.innerText = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+                galleryTitle.innerText = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+                uploadFolderSelect.value = currentCategory;
+                catDropdown.classList.remove('show');
+                fetchFiles();
+            }
+
             catButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    catButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentCategory = btn.getAttribute('data-cat');
-                    currentCatLabel.innerText = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
-                    galleryTitle.innerText = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
-                    uploadFolderSelect.value = currentCategory;
-                    catDropdown.classList.remove('show');
-                    fetchFiles();
+                    switchCategoryUI(btn.getAttribute('data-cat'));
                 });
             });
 
@@ -429,6 +439,15 @@
                 if (!file) return;
 
                 const folder = uploadFolderSelect.value;
+                
+                // Security Check: Attempting to upload to Admin without perms
+                if (folder === 'admin' && !isAdminUnlocked) {
+                    uploadStatus.style.color = '#ef4444';
+                    uploadStatus.innerText = 'ERROR: YOU DO NOT HAVE THE PERMISSIONS NECESSARY';
+                    fileInput.value = ''; // wipe input
+                    return;
+                }
+
                 uploadStatus.style.color = 'var(--text-main)';
                 uploadStatus.innerText = `Uploading '${file.name}'...`;
                 const filePath = `${folder}/${Date.now()}_${file.name}`;
@@ -443,13 +462,23 @@
                     uploadStatus.innerText = `Successfully uploaded!`;
                     fileInput.value = ''; 
                     if (folder === currentCategory) fetchFiles();
-                    if (isAdminUnlocked) fetchStorageStats(); // Update dashboard live
+                    if (isAdminUnlocked) fetchStorageStats(); 
                 }
                 setTimeout(() => { uploadStatus.style.color = 'var(--text-main)'; uploadStatus.innerText = 'Select a file to upload'; }, 5000);
             });
 
             // --- FETCH & DISPLAY LOGIC ---
             async function fetchFiles() {
+                // Check Admin viewing perms
+                if (currentCategory === 'admin' && !isAdminUnlocked) {
+                    galleryContainer.style.filter = "blur(10px)";
+                    lockedOverlay.classList.remove('hidden');
+                    return; // Stop fetching files
+                } else {
+                    galleryContainer.style.filter = "none";
+                    lockedOverlay.classList.add('hidden');
+                }
+
                 galleryContainer.innerHTML = '<p style="color: var(--text-muted);">Loading files from Supabase...</p>';
 
                 const { data, error } = await supabase.storage.from(BUCKET_NAME).list(currentCategory, {
@@ -477,11 +506,11 @@
                     itemDiv.className = 'media-item';
 
                     let mediaContent = '';
-                    if (currentCategory === 'pictures') {
+                    if (currentCategory === 'pictures' || (currentCategory === 'admin' && file.name.match(/\.(jpg|jpeg|png|gif)$/i))) {
                         mediaContent = `<img src="${url}" alt="image loading..." loading="lazy">`;
-                    } else if (currentCategory === 'videos') {
+                    } else if (currentCategory === 'videos' || (currentCategory === 'admin' && file.name.match(/\.(mp4|webm|ogg)$/i))) {
                         mediaContent = `<video controls src="${url}"></video>`;
-                    } else if (currentCategory === 'audio') {
+                    } else if (currentCategory === 'audio' || (currentCategory === 'admin' && file.name.match(/\.(mp3|wav|m4a)$/i))) {
                         mediaContent = `<div style="height: 150px; display:flex; justify-content:center; align-items:center; background: var(--bg-card); padding: 10px;"><audio controls src="${url}" style="width: 100%; outline: none;"></audio></div>`;
                     } else {
                         mediaContent = `<div style="height: 150px; background: var(--bg-card); display:flex; justify-content:center; align-items:center; font-size: 3rem;">📄</div>`;
@@ -489,34 +518,55 @@
 
                     itemDiv.innerHTML = `
                         ${mediaContent}
-                        <div class="media-info">
+                        <div class="media-info" id="info-${file.name.replace(/[^a-zA-Z0-9]/g, '')}">
                             <span style="font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${file.name}">${file.name}</span>
                             <a href="${url}" target="_blank">Open Full Size</a>
                         </div>
                     `;
 
-                    // If Admin is unlocked, add the Red X delete button
+                    // If Admin is unlocked, add the Red X and Move To Admin buttons!
                     if (isAdminUnlocked) {
+                        
+                        // 1. Delete Button (Red X)
                         const deleteBtn = document.createElement('button');
                         deleteBtn.className = 'delete-btn';
                         deleteBtn.innerText = 'X';
-                        
                         deleteBtn.addEventListener('click', async () => {
                             const userConfirmed = confirm("Confirm: Are you sure you want to delete this file completely from Supabase?");
                             if (userConfirmed) {
                                 const filePath = `${currentCategory}/${file.name}`;
                                 const { error: deleteError } = await supabase.storage.from(BUCKET_NAME).remove([filePath]);
-                                
-                                if (deleteError) {
-                                    alert("Error deleting file: " + deleteError.message);
-                                } else {
-                                    fetchFiles(); // Refresh gallery
-                                    fetchStorageStats(); // Update dashboard live
-                                }
+                                if (deleteError) alert("Error deleting file: " + deleteError.message);
+                                else { fetchFiles(); fetchStorageStats(); }
                             }
                         });
-
                         itemDiv.appendChild(deleteBtn);
+
+                        // 2. Move To Admin Button (Only if we aren't already in Admin)
+                        if (currentCategory !== 'admin') {
+                            const moveBtn = document.createElement('button');
+                            moveBtn.className = 'move-admin-btn';
+                            moveBtn.innerText = 'Move To Admin?';
+                            moveBtn.addEventListener('click', async () => {
+                                const userConfirmed = confirm("Confirm: Move this file to the Admin category?");
+                                if (userConfirmed) {
+                                    const oldPath = `${currentCategory}/${file.name}`;
+                                    const newPath = `admin/${file.name}`;
+                                    
+                                    // Move file in Supabase
+                                    const { data, error } = await supabase.storage.from(BUCKET_NAME).move(oldPath, newPath);
+                                    
+                                    if (error) {
+                                        alert("Error moving file: " + error.message);
+                                    } else {
+                                        fetchFiles(); // Refresh current gallery (file will disappear)
+                                        fetchStorageStats(); // Update storage numbers
+                                    }
+                                }
+                            });
+                            // Append right under the file name in the info box
+                            itemDiv.querySelector('.media-info').appendChild(moveBtn);
+                        }
                     }
 
                     galleryContainer.appendChild(itemDiv);
