@@ -114,6 +114,28 @@
         .key-slot { border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; margin-bottom: 10px; background: var(--bg-body);}
         .key-controls { display: flex; gap: 5px; margin-top: 8px; }
     </style>
+    
+    <!-- Vercel Speed Insights -->
+    <script>
+        (function() {
+            // Initialize Speed Insights queue
+            if (window.si) return;
+            window.si = function() {
+                (window.siq = window.siq || []).push(arguments);
+            };
+            
+            // Load Speed Insights script
+            var script = document.createElement('script');
+            script.src = '/_vercel/speed-insights/script.js';
+            script.defer = true;
+            script.setAttribute('data-sdkn', '@vercel/speed-insights');
+            script.setAttribute('data-sdkv', '1.3.1');
+            script.onerror = function() {
+                console.log('[Vercel Speed Insights] Failed to load script. Please check if any content blockers are enabled.');
+            };
+            document.head.appendChild(script);
+        })();
+    </script>
 </head>
 <body class="dark-mode">
 

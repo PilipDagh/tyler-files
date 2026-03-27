@@ -1,0 +1,17 @@
+{
+  "name": "tyler-files",
+  "version": "1.0.0",
+  "description": "Tyler Files - Cloud-backed media & notes",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'No build needed for static site'"
+  },
+  "dependencies": {
+    "@vercel/speed-insights": "^1.0.12"
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
