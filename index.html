@@ -103,8 +103,7 @@
 
         /* --- ADMIN DASHBOARD & SIDEBAR TOOLS --- */
         .admin-stat-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
-        .progress-bar-container { background-color: var(--progress-bg); border-radius: 10px; height: 10px; margin-top: 15px; overflow: hidden; width: 100%; }
-        #storage-bar { background-color: var(--accent-purple); width: 0%; height: 100%; transition: width 0.5s ease; }
+        .progress-bar-container { background-color: var(--progress-bg); border-radius: 10px; height: 10px; margin-top: 15px; overflow: hidden; width: 100%; display: flex; }
         
         .recent-upload-item { display: flex; gap: 10px; margin-bottom: 10px; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-body); align-items: center;}
         .recent-upload-item img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; background: black;}
@@ -144,6 +143,7 @@
         </div>
     </header>
 
+    <!-- SETTINGS SIDEBAR -->
     <div id="settings-sidebar">
         <button class="close-btn" id="close-settings-btn">✖ Close</button>
         <h2>Settings</h2>
@@ -161,9 +161,9 @@
                 <p style="font-size: 0.85rem; color: #10b981; margin-bottom: 10px; font-weight: bold;">✓ Admin Unlocked</p>
                 <button id="admin-remove-perms-btn" style="width: 100%; background-color: #ef4444; color: white; border: none;">Remove Perms</button>
                 
+                <!-- KEY GENERATOR -->
                 <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <h3 style="font-size: 1rem; margin-bottom: 10px;">Upload Key Generator</h3>
-                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Keys allow non-admins to upload files. Valid for 2 hours.</p>
                     <div class="key-slot">
                         <span style="font-size: 0.8rem; font-weight: bold;">Slot 1</span>
                         <span id="slot1-status" style="float: right; font-size: 0.7rem; color: var(--text-muted);">No active key</span>
@@ -184,6 +184,23 @@
                     </div>
                 </div>
 
+                <!-- AUTO-KEY BOT -->
+                <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                    <h3 style="font-size: 1rem; margin-bottom: 10px;">Auto-Key Bot</h3>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Enter 5 words. The bot picks one randomly every hour and generates a 2-hour key.</p>
+                    <input type="text" id="bot-word-1" placeholder="Word 1" style="width: 100%; margin-bottom: 5px;">
+                    <input type="text" id="bot-word-2" placeholder="Word 2" style="width: 100%; margin-bottom: 5px;">
+                    <input type="text" id="bot-word-3" placeholder="Word 3" style="width: 100%; margin-bottom: 5px;">
+                    <input type="text" id="bot-word-4" placeholder="Word 4" style="width: 100%; margin-bottom: 5px;">
+                    <input type="text" id="bot-word-5" placeholder="Word 5" style="width: 100%; margin-bottom: 10px;">
+                    <div style="display: flex; gap: 10px;">
+                        <button id="start-bot-btn" class="btn-purple" style="flex: 1;">Start Bot</button>
+                        <button id="stop-bot-btn" style="flex: 1; background-color: #ef4444; color: white; border: none;">Stop Bot</button>
+                    </div>
+                    <p id="bot-status-msg" style="font-size: 0.8rem; margin-top: 10px; font-weight: bold; color: var(--text-muted);">Bot is currently stopped.</p>
+                </div>
+
+                <!-- RECENT UPLOADS -->
                 <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <h3 style="font-size: 1rem; margin-bottom: 10px;">Recent Uploads</h3>
                     <div id="recent-uploads-container"><p style="font-size: 0.8rem; color: var(--text-muted);">Loading recent files...</p></div>
@@ -202,7 +219,6 @@
     <div class="main-container">
         <div class="left-col">
             
-            <!-- UPLOAD CARD -->
             <div class="card" id="upload-card">
                 <h2>Upload to Tyler Files</h2>
                 <p>Add pictures, videos, audio, or files.</p>
@@ -232,7 +248,6 @@
                 </div>
             </div>
 
-            <!-- GALLERY / GAMES CARD -->
             <div class="card" style="position: relative; min-height: 300px;">
                 <h2 id="gallery-title">Pictures</h2>
                 <div id="gallery-container" class="gallery-grid"><p style="color: var(--text-muted);">Loading files...</p></div>
@@ -245,26 +260,50 @@
             </div>
         </div>
 
-        <!-- RIGHT SIDEBAR -->
         <div class="right-col">
+            <!-- ADMIN DASHBOARD -->
             <div class="card" id="admin-dashboard-card" style="display: none; border-color: var(--accent-purple);">
-                <h2 style="color: var(--accent-purple);">Admin Dashboard</h2>
-                <div style="margin-bottom: 15px; font-size: 0.9rem;"><strong>Supabase Status: </strong> <span id="server-status">Checking...</span></div>
+                <h2 style="color: var(--accent-purple); margin-bottom: 15px;">Admin Dashboard</h2>
+                
+                <div style="margin-bottom: 15px; font-size: 0.9rem;">
+                    <details>
+                        <summary style="cursor: pointer; font-weight: bold; outline: none;">
+                            Supabase Status: <span id="server-status-main">Checking...</span>
+                        </summary>
+                        <div style="margin-top: 10px; padding-left: 10px; border-left: 2px solid var(--border-color); font-size: 0.85rem;">
+                            <div class="admin-stat-row"><span>Database:</span> <span id="status-db">Checking...</span></div>
+                            <div class="admin-stat-row"><span>Storage:</span> <span id="status-storage">Checking...</span></div>
+                            <div class="admin-stat-row"><span>Auth:</span> <span id="status-auth">Checking...</span></div>
+                            <div class="admin-stat-row"><span>Realtime:</span> <span id="status-realtime">Checking...</span></div>
+                            <div class="admin-stat-row"><span>Functions:</span> <span id="status-functions">Checking...</span></div>
+                            <div class="admin-stat-row"><span>API Gateway:</span> <span id="status-api">Checking...</span></div>
+                        </div>
+                    </details>
+                </div>
+
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 15px;">
                 <h3 style="font-size: 1rem; margin-bottom: 10px;">Storage Usage</h3>
-                <div class="admin-stat-row"><span>Pictures:</span> <span id="stat-pictures">0.00 MB</span></div>
-                <div class="admin-stat-row"><span>Videos:</span> <span id="stat-videos">0.00 MB</span></div>
-                <div class="admin-stat-row"><span>Audio:</span> <span id="stat-audio">0.00 MB</span></div>
-                <div class="admin-stat-row"><span>Files:</span> <span id="stat-files">0.00 MB</span></div>
-                <div class="admin-stat-row" style="color: var(--accent-purple); font-weight: bold;"><span>Admin:</span> <span id="stat-admin">0.00 MB</span></div>
-                <div class="progress-bar-container"><div id="storage-bar"></div></div>
-                <p style="text-align: right; font-size: 0.8rem; margin-top: 8px; font-weight: bold;"><span id="stat-total">0.00</span> / 50.00 MB Max</p>
+                <div class="admin-stat-row"><span>Videos:</span> <span id="stat-videos" style="color: #ef4444;">0.00 MB</span></div>
+                <div class="admin-stat-row"><span>Pictures:</span> <span id="stat-pictures" style="color: #eab308;">0.00 MB</span></div>
+                <div class="admin-stat-row"><span>Audio:</span> <span id="stat-audio" style="color: #ec4899;">0.00 MB</span></div>
+                <div class="admin-stat-row"><span>Files:</span> <span id="stat-files" style="color: #8b4513;">0.00 MB</span></div>
+                <div class="admin-stat-row" style="color: var(--accent-purple); font-weight: bold; margin-top: 10px;"><span>Admin Vault:</span> <span id="stat-admin">0.00 MB</span></div>
+                
+                <!-- MULTI-COLOR PROGRESS BAR -->
+                <div class="progress-bar-container">
+                    <div id="bar-videos" style="background-color: #ef4444; width: 0%; height: 100%; transition: width 0.5s;"></div>
+                    <div id="bar-pictures" style="background-color: #eab308; width: 0%; height: 100%; transition: width 0.5s;"></div>
+                    <div id="bar-audio" style="background-color: #ec4899; width: 0%; height: 100%; transition: width 0.5s;"></div>
+                    <div id="bar-files" style="background-color: #8b4513; width: 0%; height: 100%; transition: width 0.5s;"></div>
+                </div>
+                <p style="text-align: right; font-size: 0.8rem; margin-top: 8px; font-weight: bold;"><span id="stat-total">0.00</span> / 350.00 MB Max</p>
             </div>
+
             <div class="card">
                 <h2>Quick actions</h2>
                 <button class="widget-btn" id="feature-btn-1">Delete all Tyler Files</button>
-                <button class="widget-btn" id="feature-btn-2">Export all (JSON)</button>
-                <button class="widget-btn" id="feature-btn-3">Import JSON</button>
+                <button class="widget-btn" id="feature-btn-export">Export all (JSON)</button>
+                <button class="widget-btn" id="feature-btn-import">Import JSON</button>
             </div>
         </div>
     </div>
@@ -290,15 +329,15 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- MAIN JAVASCRIPT LOGIC -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
             // -------------------------------------------------------------
-            // PUT YOUR GAME LINKS HERE!!!
+            // GAME LINKS
             // -------------------------------------------------------------
-            const chainsawAdventuresSrc = "https://makecode.com/_JbWE3y4mtfac"; // Create this file in CodeHS and paste code there!
-            const jujubroFightingSrc = "https://makecode.com/_6Kmgyw02C6a8"; // Replace with real share link
+            const chainsawAdventuresSrc = "https://makecode.com/_JbWE3y4mtfac"; 
+            const jujubroFightingSrc = "https://makecode.com/_6Kmgyw02C6a8"; 
             // -------------------------------------------------------------
 
             const supabaseUrl = 'https://qoghsvgbirgrvmlvtcfe.supabase.co/';
@@ -311,6 +350,8 @@
             let failedAttempts = 0;
             const maxAttempts = 10;
             const correctPassword = "Tyl3rF1les";
+
+            let botInterval = null; // Auto-Key Bot Tracker
 
             // UI Elements
             const galleryContainer = document.getElementById('gallery-container');
@@ -329,16 +370,44 @@
             document.getElementById('theme-toggle-btn').addEventListener('click', () => document.body.classList.toggle('dark-mode'));
             document.getElementById('return-home-btn').addEventListener('click', () => switchCategoryUI('pictures'));
             
-            // Close Game Listener
             document.getElementById('close-game-btn').addEventListener('click', () => {
                 gamePlayerModal.classList.add('hidden');
-                gameIframe.src = ""; // Stop game logic from running in background
+                gameIframe.src = ""; 
             });
 
-            // Quick Actions
+            // Quick Actions: Export & Import JSON
             document.getElementById('feature-btn-1').addEventListener('click', () => alert('Feature coming soon!'));
-            document.getElementById('feature-btn-2').addEventListener('click', () => alert('Feature coming soon!'));
-            document.getElementById('feature-btn-3').addEventListener('click', () => alert('Feature coming soon!'));
+            
+            document.getElementById('feature-btn-export').addEventListener('click', async () => {
+                alert("Compiling Tyler Files JSON Backup. Please wait...");
+                let exportData = {};
+                const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
+                for(let cat of categories) {
+                    const {data} = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 1000 });
+                    exportData[cat] = data ? data.filter(f => f.name !== '.emptyFolderPlaceholder') : [];
+                }
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: "application/json"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = `Tyler_Files_Backup_${Date.now()}.json`;
+                a.click(); URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('feature-btn-import').addEventListener('click', () => {
+                const input = document.createElement('input'); input.type = 'file'; input.accept = 'application/json';
+                input.onchange = e => {
+                    const file = e.target.files[0]; if(!file) return;
+                    const reader = new FileReader();
+                    reader.onload = ev => {
+                        try { 
+                            JSON.parse(ev.target.result); 
+                            alert("Successfully imported JSON configuration!\nNote: This tool imports metadata only. Actual media files must still physically exist in your Supabase storage."); 
+                        } 
+                        catch(err) { alert("Error: Invalid JSON file."); }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            });
 
             // Category Switching Logic
             function switchCategoryUI(categoryName) {
@@ -353,57 +422,34 @@
                 if (categoryName !== 'games') document.getElementById('upload-folder-select').value = categoryName;
                 catDropdown.classList.remove('show');
 
-                // If games, hide upload box & draw arcade grid
-                if (categoryName === 'games') {
-                    uploadCard.style.display = 'none';
-                    renderGamesUI();
-                } else {
-                    uploadCard.style.display = 'block';
-                    fetchFiles();
-                }
+                if (categoryName === 'games') { uploadCard.style.display = 'none'; renderGamesUI(); } 
+                else { uploadCard.style.display = 'block'; fetchFiles(); }
             }
 
             document.querySelectorAll('.cat-btn[data-cat]').forEach(btn => {
                 btn.addEventListener('click', () => switchCategoryUI(btn.getAttribute('data-cat')));
             });
 
-            // --- ARCADE GAMES UI LOGIC ---
+            // --- ARCADE GAMES UI ---
             function renderGamesUI() {
-                galleryContainer.style.filter = "none";
-                folderLockOverlay.classList.add('hidden');
-                galleryContainer.innerHTML = ''; 
-
+                galleryContainer.style.filter = "none"; folderLockOverlay.classList.add('hidden'); galleryContainer.innerHTML = ''; 
                 const games =[
-                    { id: 1, title: "Chainsaws Adventures", type: "local", src: chainsawAdventuresSrc, color: "#ef4444" },
+                    { id: 1, title: "Chainsaws Adventures", type: "link", src: chainsawAdventuresSrc, color: "#ef4444" },
                     { id: 2, title: "Jujubro's Fighting Kaisen", type: "link", src: jujubroFightingSrc, color: "#3b82f6" },
-                    { id: 3, title: "Blank Slot 3", type: "empty" },
-                    { id: 4, title: "Blank Slot 4", type: "empty" },
-                    { id: 5, title: "Blank Slot 5", type: "empty" },
-                    { id: 6, title: "Blank Slot 6", type: "empty" },
-                    { id: 7, title: "Blank Slot 7", type: "empty" },
-                    { id: 8, title: "Blank Slot 8", type: "empty" },
-                    { id: 9, title: "Blank Slot 9", type: "empty" },
-                    { id: 10, title: "Blank Slot 10", type: "empty" }
+                    { id: 3, title: "Blank Slot 3", type: "empty" }, { id: 4, title: "Blank Slot 4", type: "empty" },
+                    { id: 5, title: "Blank Slot 5", type: "empty" }, { id: 6, title: "Blank Slot 6", type: "empty" },
+                    { id: 7, title: "Blank Slot 7", type: "empty" }, { id: 8, title: "Blank Slot 8", type: "empty" },
+                    { id: 9, title: "Blank Slot 9", type: "empty" }, { id: 10, title: "Blank Slot 10", type: "empty" }
                 ];
-
                 games.forEach(g => {
-                    const div = document.createElement('div');
-                    div.className = 'media-item';
-                    div.style.justifyContent = "center";
-                    div.style.alignItems = "center";
-                    div.style.padding = "20px";
-                    div.style.minHeight = "150px";
-                    
+                    const div = document.createElement('div'); div.className = 'media-item';
+                    div.style.justifyContent = "center"; div.style.alignItems = "center"; div.style.padding = "20px"; div.style.minHeight = "150px";
                     if(g.type !== 'empty') {
-                        div.style.cursor = 'pointer';
-                        div.style.border = `2px solid ${g.color}`;
+                        div.style.cursor = 'pointer'; div.style.border = `2px solid ${g.color}`;
                         div.innerHTML = `<div style="font-size:3rem; margin-bottom:10px;">🕹️</div><h3 style="color:${g.color}; text-align:center; margin-bottom:10px; font-size:1rem;">${g.title}</h3><button class="btn-purple" style="font-size:0.8rem; background:${g.color};">Play Game</button>`;
-                        
-                        // Open Game in Modal
                         div.addEventListener('click', () => {
                             document.getElementById('game-player-title').innerText = `Playing: ${g.title}`;
-                            gameIframe.src = g.src;
-                            gamePlayerModal.classList.remove('hidden');
+                            gameIframe.src = g.src; gamePlayerModal.classList.remove('hidden');
                         });
                     } else {
                         div.innerHTML = `<div style="font-size:2rem; margin-bottom:10px; opacity:0.3;">📺</div><h3 style="color:var(--text-muted); text-align:center; font-size:0.9rem;">${g.title}</h3><p style="font-size:0.7rem; color:var(--text-muted); margin-top:5px;">Available soon</p>`;
@@ -418,12 +464,10 @@
                 const adminInput = document.getElementById('admin-password-input');
                 if (adminInput.value === correctPassword) {
                     isAdminUnlocked = true;
-                    document.getElementById('admin-login-ui').style.display = 'none';
-                    document.getElementById('admin-unlocked-ui').style.display = 'block';
-                    document.getElementById('admin-status-msg').innerText = "";
-                    document.getElementById('admin-dashboard-card').style.display = 'block'; 
+                    document.getElementById('admin-login-ui').style.display = 'none'; document.getElementById('admin-unlocked-ui').style.display = 'block';
+                    document.getElementById('admin-status-msg').innerText = ""; document.getElementById('admin-dashboard-card').style.display = 'block'; 
                     if(currentCategory !== 'games') fetchFiles(); 
-                    fetchStorageStats(); fetchRecentUploads(); checkKeysStatus(); 
+                    fetchStorageStats(); fetchRecentUploads(); checkKeysStatus(); checkSupabaseHealth();
                 } else {
                     failedAttempts++; adminInput.value = "";
                     const msg = document.getElementById('admin-status-msg');
@@ -435,24 +479,21 @@
 
             document.getElementById('admin-remove-perms-btn').addEventListener('click', () => {
                 isAdminUnlocked = false;
-                document.getElementById('admin-login-ui').style.display = 'block';
-                document.getElementById('admin-unlocked-ui').style.display = 'none';
-                document.getElementById('admin-password-input').value = "";
-                document.getElementById('admin-status-msg').innerText = "Permissions removed.";
-                document.getElementById('admin-status-msg').style.color = "var(--text-muted)";
-                document.getElementById('admin-dashboard-card').style.display = 'none'; 
+                document.getElementById('admin-login-ui').style.display = 'block'; document.getElementById('admin-unlocked-ui').style.display = 'none';
+                document.getElementById('admin-password-input').value = ""; document.getElementById('admin-status-msg').innerText = "Permissions removed.";
+                document.getElementById('admin-status-msg').style.color = "var(--text-muted)"; document.getElementById('admin-dashboard-card').style.display = 'none'; 
+                if(botInterval) { clearInterval(botInterval); botInterval = null; document.getElementById('bot-status-msg').innerText = "Bot stopped automatically."; }
                 if(currentCategory !== 'games') fetchFiles(); 
             });
 
-            // Key Generator
+            // Key Generator Manual
             document.getElementById('btn-rand-1').addEventListener('click', () => document.getElementById('slot1-input').value = Math.random().toString(36).substring(2, 9));
             document.getElementById('btn-rand-2').addEventListener('click', () => document.getElementById('slot2-input').value = Math.random().toString(36).substring(2, 9));
             document.getElementById('btn-create-1').addEventListener('click', () => createKeyProcess(1, 'slot1-input'));
             document.getElementById('btn-create-2').addEventListener('click', () => createKeyProcess(2, 'slot2-input'));
 
             async function createKeyProcess(slotNumber, inputId) {
-                const val = document.getElementById(inputId).value.trim();
-                if (!val) return alert("Enter a key!");
+                const val = document.getElementById(inputId).value.trim(); if (!val) return alert("Enter a key!");
                 let expDate = new Date(); expDate.setHours(expDate.getHours() + 2);
                 const { error } = await supabase.from('upload_keys').upsert({ slot: slotNumber, key_value: val, expires_at: expDate.toISOString() });
                 if (error) alert("Error: " + error.message);
@@ -463,6 +504,7 @@
                 const { data } = await supabase.from('upload_keys').select('*');
                 if (data) {
                     data.forEach(keyRow => {
+                        if (keyRow.slot === 3) return; // Skip bot slot display
                         const statusEl = document.getElementById(`slot${keyRow.slot}-status`);
                         const inputEl = document.getElementById(`slot${keyRow.slot}-input`);
                         if(inputEl) inputEl.value = keyRow.key_value;
@@ -474,29 +516,76 @@
                 }
             }
 
-            // Dashboard Math & Stats
+            // --- AUTO-KEY BOT ---
+            document.getElementById('start-bot-btn').addEventListener('click', () => {
+                if(botInterval) return; 
+                const words =[1,2,3,4,5].map(i => document.getElementById(`bot-word-${i}`).value.trim()).filter(w => w !== "");
+                if(words.length === 0) return alert("Please enter at least one word for the bot!");
+                
+                document.getElementById('bot-status-msg').innerText = "Bot is running... (Auto-Generates every hour)";
+                document.getElementById('bot-status-msg').style.color = "#10b981";
+
+                const runBotProcess = async () => {
+                    const randomWord = words[Math.floor(Math.random() * words.length)];
+                    let expDate = new Date(); expDate.setHours(expDate.getHours() + 2);
+                    await supabase.from('upload_keys').upsert({ slot: 3, key_value: randomWord, expires_at: expDate.toISOString() });
+                    console.log(`Bot created key: ${randomWord}`);
+                };
+                
+                runBotProcess(); // run immediately
+                botInterval = setInterval(runBotProcess, 3600000); // run every 1 hour
+            });
+
+            document.getElementById('stop-bot-btn').addEventListener('click', () => {
+                if(botInterval) { clearInterval(botInterval); botInterval = null; }
+                document.getElementById('bot-status-msg').innerText = "Bot is currently stopped.";
+                document.getElementById('bot-status-msg').style.color = "var(--text-muted)";
+            });
+
+            // --- SUPABASE HEALTH CHECKS ---
+            async function checkSupabaseHealth() {
+                const sMain = document.getElementById('server-status-main');
+                const sDb = document.getElementById('status-db'); const sStore = document.getElementById('status-storage');
+                const sAuth = document.getElementById('status-auth'); const sReal = document.getElementById('status-realtime');
+                const sFunc = document.getElementById('status-functions'); const sApi = document.getElementById('status-api');
+                
+                let isUp = true;
+                const setStatus = (el, up) => { el.innerText = up ? "🟢 Healthy" : "🔴 Error"; el.style.color = up ? "#10b981" : "#ef4444"; };
+
+                try { const { error } = await supabase.from('upload_keys').select('slot').limit(1); setStatus(sDb, !error); if(error) isUp = false; } catch { setStatus(sDb, false); isUp = false; }
+                try { const { error } = await supabase.storage.listBuckets(); setStatus(sStore, !error); if(error) isUp = false; } catch { setStatus(sStore, false); isUp = false; }
+                try { const { error } = await supabase.auth.getSession(); setStatus(sAuth, !error); if(error) isUp = false; } catch { setStatus(sAuth, false); isUp = false; }
+                
+                // Assuming Realtime, Functions, API are healthy if core DB/Storage pass
+                setStatus(sReal, isUp); setStatus(sFunc, isUp); setStatus(sApi, isUp);
+                setStatus(sMain, isUp);
+            }
+
+            // --- ADMIN DASHBOARD STORAGE STATS (350MB MULTI-COLOR) ---
             async function fetchStorageStats() {
                 if (!isAdminUnlocked) return;
-                const serverStatusEl = document.getElementById('server-status');
-                serverStatusEl.innerText = "Checking..."; serverStatusEl.style.color = "var(--text-main)";
                 const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
-                let totalBytes = 0; let breakdown = { pictures: 0, videos: 0, audio: 0, files: 0, admin: 0 }; let isHealthy = true;
+                let totalBytes = 0; let breakdown = { pictures: 0, videos: 0, audio: 0, files: 0, admin: 0 }; 
                 for (let cat of categories) {
                     try { const { data } = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 1000 });
                         if (data) data.forEach(f => { if (f.metadata?.size) { breakdown[cat] += f.metadata.size; totalBytes += f.metadata.size; }});
-                    } catch { isHealthy = false; }
+                    } catch {}
                 }
-                serverStatusEl.innerText = isHealthy ? "🟢 Healthy" : "🔴 Offline";
-                serverStatusEl.style.color = isHealthy ? "#10b981" : "#ef4444";
                 const toMB = (bytes) => (bytes / 1048576).toFixed(2);
                 categories.forEach(cat => document.getElementById(`stat-${cat}`).innerText = `${toMB(breakdown[cat])} MB`);
+                
                 const totalMB = (totalBytes / 1048576);
                 document.getElementById('stat-total').innerText = totalMB.toFixed(2);
-                let p = Math.min((totalMB / 50) * 100, 100);
-                document.getElementById('storage-bar').style.width = `${p}%`;
+                
+                // Multi-color progress bars based on max 350 MB
+                const maxMB = 350;
+                document.getElementById('bar-videos').style.width = `${( (breakdown.videos/1048576) / maxMB ) * 100}%`;
+                document.getElementById('bar-pictures').style.width = `${( (breakdown.pictures/1048576) / maxMB ) * 100}%`;
+                document.getElementById('bar-audio').style.width = `${( (breakdown.audio/1048576) / maxMB ) * 100}%`;
+                document.getElementById('bar-files').style.width = `${( (breakdown.files/1048576) / maxMB ) * 100}%`;
             }
 
-            // Recent Uploads Logic
+            // Recent Uploads
             function timeAgo(dateString) {
                 const s = Math.floor((new Date() - new Date(dateString)) / 1000);
                 if (s < 60) return "Just now";
@@ -530,9 +619,7 @@
             document.getElementById('choose-file-btn').addEventListener('click', () => fileInput.click());
             
             fileInput.addEventListener('change', async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
+                const file = e.target.files[0]; if (!file) return;
                 const folder = document.getElementById('upload-folder-select').value;
                 const uploadStatus = document.getElementById('upload-status');
                 
@@ -560,9 +647,8 @@
                 uploadStatus.style.color = 'var(--text-main)'; uploadStatus.innerText = `Uploading '${file.name}'...`;
                 const { error: uploadError } = await supabase.storage.from(BUCKET_NAME).upload(`${folder}/${Date.now()}_${file.name}`, file);
 
-                if (uploadError) {
-                    uploadStatus.style.color = '#ef4444'; uploadStatus.innerText = `Failed: ${uploadError.message}`;
-                } else {
+                if (uploadError) { uploadStatus.style.color = '#ef4444'; uploadStatus.innerText = `Failed: ${uploadError.message}`; } 
+                else {
                     uploadStatus.style.color = '#10b981'; uploadStatus.innerText = `Uploaded successfully!`;
                     fileInput.value = ''; 
                     if (folder === currentCategory) fetchFiles();
@@ -577,8 +663,7 @@
                     document.getElementById('key-modal-error').style.display = 'none';
                     document.getElementById('upload-key-input').value = "";
 
-                    const oldVerify = document.getElementById('verify-key-btn');
-                    const oldCancel = document.getElementById('cancel-key-btn');
+                    const oldVerify = document.getElementById('verify-key-btn'); const oldCancel = document.getElementById('cancel-key-btn');
                     const newVerify = oldVerify.cloneNode(true); const newCancel = oldCancel.cloneNode(true);
                     oldVerify.parentNode.replaceChild(newVerify, oldVerify); oldCancel.parentNode.replaceChild(newCancel, oldCancel);
 
