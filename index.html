@@ -198,6 +198,13 @@
                         <button id="stop-bot-btn" style="flex: 1; background-color: #ef4444; color: white; border: none;">Stop Bot</button>
                     </div>
                     <p id="bot-status-msg" style="font-size: 0.8rem; margin-top: 10px; font-weight: bold; color: var(--text-muted);">Bot is currently stopped.</p>
+
+                    <!-- CURRENT BOT KEY DISPLAY BOX -->
+                    <div class="key-slot" style="margin-top: 15px; border-color: var(--accent-purple); background: var(--bg-card);">
+                        <span style="font-size: 0.8rem; font-weight: bold; color: var(--accent-purple);">Current Auto-Bot Key</span>
+                        <span id="bot-key-status" style="float: right; font-size: 0.7rem; color: var(--text-muted);">No active key</span>
+                        <input type="text" id="bot-active-key-display" readonly placeholder="Waiting for bot..." style="width: 100%; margin-top: 5px; cursor: text; border-color: var(--accent-purple);">
+                    </div>
                 </div>
 
                 <!-- RECENT UPLOADS -->
@@ -384,7 +391,7 @@
                 const categories =['pictures', 'videos', 'audio', 'files', 'admin'];
                 for(let cat of categories) {
                     const {data} = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 1000 });
-                    exportData[cat] = data ? data.filter(f => f.name !== '.emptyFolderPlaceholder') : [];
+                    exportData[cat] = data ? data.filter(f => f.name !== '.emptyFolderPlaceholder') :[];
                 }
                 const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: "application/json"});
                 const url = URL.createObjectURL(blob);
@@ -497,20 +504,31 @@
                 let expDate = new Date(); expDate.setHours(expDate.getHours() + 2);
                 const { error } = await supabase.from('upload_keys').upsert({ slot: slotNumber, key_value: val, expires_at: expDate.toISOString() });
                 if (error) alert("Error: " + error.message);
-                else { document.getElementById(`slot${slotNumber}-status`).innerText = "Active"; document.getElementById(`slot${slotNumber}-status`).style.color = "#10b981"; }
+                else checkKeysStatus();
             }
 
+            // Checks the DB for all keys (Slots 1, 2, and Bot Slot 3)
             async function checkKeysStatus() {
                 const { data } = await supabase.from('upload_keys').select('*');
                 if (data) {
                     data.forEach(keyRow => {
-                        if (keyRow.slot === 3) return; // Skip bot slot display
-                        const statusEl = document.getElementById(`slot${keyRow.slot}-status`);
-                        const inputEl = document.getElementById(`slot${keyRow.slot}-input`);
+                        let statusEl, inputEl;
+                        
+                        if (keyRow.slot === 3) { // Bot Key Display
+                            statusEl = document.getElementById('bot-key-status');
+                            inputEl = document.getElementById('bot-active-key-display');
+                        } else { // Manual Slots
+                            statusEl = document.getElementById(`slot${keyRow.slot}-status`);
+                            inputEl = document.getElementById(`slot${keyRow.slot}-input`);
+                        }
+                        
                         if(inputEl) inputEl.value = keyRow.key_value;
                         if (statusEl) {
-                            if (new Date(keyRow.expires_at) > new Date()) { statusEl.innerText = "Active"; statusEl.style.color = "#10b981"; } 
-                            else { statusEl.innerText = "Expired"; statusEl.style.color = "#ef4444"; }
+                            if (new Date(keyRow.expires_at) > new Date()) { 
+                                statusEl.innerText = "Active"; statusEl.style.color = "#10b981"; 
+                            } else { 
+                                statusEl.innerText = "Expired"; statusEl.style.color = "#ef4444"; 
+                            }
                         }
                     });
                 }
@@ -530,6 +548,7 @@
                     let expDate = new Date(); expDate.setHours(expDate.getHours() + 2);
                     await supabase.from('upload_keys').upsert({ slot: 3, key_value: randomWord, expires_at: expDate.toISOString() });
                     console.log(`Bot created key: ${randomWord}`);
+                    checkKeysStatus(); // Update the UI box immediately
                 };
                 
                 runBotProcess(); // run immediately
