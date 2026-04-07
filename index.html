@@ -1196,7 +1196,7 @@
                     
                     if (winColor === color) {
                         const profit = Math.floor(bet * 0.35);
-                        await supabase.from('profiles').update({ coins: currentUser.coins + profit }).eq('username', currentUser.username);
+                        await supabase.from('profiles').update({ coins: currentUser.coins + profit + bet }).eq('username', currentUser.username);
                         alert(`Landed on ${winColor.toUpperCase()}! You won ${profit} 🪙!`);
                     } else alert(`Landed on ${winColor.toUpperCase()}! You lost ${bet} 🪙.`);
                     isGameRunning = false;
