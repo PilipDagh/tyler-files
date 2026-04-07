@@ -6,37 +6,37 @@
     <title>Tyler Files</title>
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Urban Font ONLY for the Music Player & Reelorts -->
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- OG CLEAN CSS VARIABLES --- */
+        /* --- CSS VARIABLES (Clean Dark Mode) --- */
         :root {
             --bg-body: #f3f4f6; --bg-card: #ffffff; --text-main: #111827; --text-muted: #6b7280;
             --border-color: #e5e7eb; --accent-purple: #5a4fcf; --accent-purple-hover: #4a40b0;
             --btn-bg: #ffffff; --btn-border: #d1d5db; --btn-hover: #f9fafb; --progress-bg: #e5e7eb;
+            --gold: #f59e0b; --gold-hover: #d97706;
         }
-
         .dark-mode {
             --bg-body: #111827; --bg-card: #1f2937; --text-main: #f9fafb; --text-muted: #9ca3af;
             --border-color: #374151; --accent-purple: #6b5ce6; --accent-purple-hover: #7b6df2;
             --btn-bg: #374151; --btn-border: #4b5563; --btn-hover: #4b5563; --progress-bg: #374151;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.3s, color 0.3s; padding: 20px; padding-bottom: 100px;}
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); transition: all 0.3s; padding: 20px; padding-bottom: 100px;}
 
-        /* --- HEADER & PRESENCE --- */
+        /* --- HEADER --- */
         .header { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px 24px; display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 20px auto; position: relative; z-index: 1000;}
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo-box { background-color: var(--accent-purple); color: white; font-weight: bold; font-size: 1.2rem; height: 48px; width: 48px; display: flex; justify-content: center; align-items: center; border-radius: 10px; }
         .header-text h1 { font-size: 1.25rem; font-weight: 600; }
         .header-text p { font-size: 0.85rem; color: var(--text-muted); }
         .header-buttons { display: flex; gap: 10px; align-items: center;}
-        
+
+        /* PRESENCE */
         .presence-container { position: relative; }
         .presence-btn { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; padding: 8px 12px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .presence-dropdown { position: absolute; top: 45px; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; width: 200px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1500; display: none; max-height: 200px; overflow-y: auto; }
+        .presence-dropdown { position: absolute; top: 40px; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; width: 200px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1500; display: none; max-height: 200px; overflow-y: auto; }
         .presence-dropdown.show { display: block; }
         .presence-user { font-size: 0.8rem; padding: 5px 0; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
         .presence-user:last-child { border-bottom: none; }
@@ -45,124 +45,101 @@
         button:hover { background-color: var(--btn-hover); }
         .btn-purple { background-color: var(--accent-purple); color: white; border: none; padding: 10px 20px; }
         .btn-purple:hover { background-color: var(--accent-purple-hover); color: white;}
+        .btn-gold { background-color: var(--gold); color: #000; border: none; font-weight: bold; }
+        .btn-gold:hover { background-color: var(--gold-hover); color: #000; }
 
+        /* --- MENUS & DROPDOWNS --- */
         #categories-dropdown { position: absolute; top: 75px; right: 80px; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; width: 350px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: none; }
         #categories-dropdown.show { display: grid; }
         .cat-btn { justify-content: center; font-size: 0.85rem; padding: 10px 5px; }
         .cat-btn.active { border-color: var(--accent-purple); color: var(--accent-purple); }
 
-        /* --- SETTINGS SIDEBAR --- */
         #settings-sidebar { position: fixed; top: 0; right: -450px; width: 400px; height: 100vh; background-color: var(--bg-card); border-left: 1px solid var(--border-color); box-shadow: -4px 0 15px rgba(0,0,0,0.5); padding: 24px; transition: right 0.3s ease; z-index: 2000; display: flex; flex-direction: column; overflow-y: auto;}
         #settings-sidebar.show { right: 0; }
-        .close-btn { align-self: flex-end; border: none; background: transparent; font-size: 1.2rem; margin-bottom: 20px;}
 
-        /* --- MAIN LAYOUT & UPLOAD --- */
+        /* --- LAYOUT --- */
         .main-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
         @media (max-width: 800px) { .main-container { grid-template-columns: 1fr; } }
-        .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 20px; transition: all 0.3s ease; position: relative;}
-        .card h2 { font-size: 1.25rem; margin-bottom: 10px; }
-        .card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
-
-        .upload-box { border: 2px dashed var(--btn-border); border-radius: 12px; padding: 40px 20px; text-align: center; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; transition: border-color 0.3s;}
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 20px; position: relative;}
+        
+        .upload-box { border: 2px dashed var(--btn-border); border-radius: 12px; padding: 40px 20px; text-align: center; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px;}
         .upload-box.drag-over { border-color: var(--accent-purple); background: rgba(90, 79, 207, 0.05); }
-        .upload-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; font-size: 0.9rem; }
-        .upload-controls div { display: flex; flex-direction: column; gap: 5px; }
-        select, input[type="text"], input[type="password"], textarea { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; outline: none; }
+        select, input[type="text"], input[type="password"], textarea, input[type="number"] { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; outline: none; }
 
-        /* --- GALLERY & MULTI-SELECT --- */
         .search-sort-bar { display: flex; gap: 10px; margin-bottom: 15px; }
         .search-sort-bar input, .search-sort-bar select { flex-grow: 1; }
-        
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; transition: filter 0.3s ease;}
+
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;}
         .media-item { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: var(--bg-body); display: flex; flex-direction: column; position: relative; cursor: pointer; transition: border-color 0.2s;}
         .media-item:hover { border-color: var(--accent-purple); }
         .media-item img, .media-item video { width: 100%; height: 150px; object-fit: cover; background: #000; }
         .media-info { padding: 10px; font-size: 0.8rem; word-break: break-all; }
         .media-info a { color: var(--accent-purple); text-decoration: none; font-weight: 500; display: block; margin-top: 5px;}
-        .guest-badge { font-size: 0.7rem; color: var(--accent-purple); background: rgba(90, 79, 207, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 5px; font-weight: bold;}
-        .subfolder-badge { font-size: 0.7rem; color: var(--text-muted); background: var(--bg-card); border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 5px;}
-
-        /* Buttons on media items */
-        .file-checkbox { position: absolute; top: 10px; left: 10px; width: 18px; height: 18px; z-index: 10; cursor: pointer; display: none; accent-color: var(--accent-purple);}
-        .show-checkboxes .file-checkbox { display: block; }
-        .delete-btn { position: absolute; top: 8px; right: 8px; background-color: #dc2626; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: bold; font-size: 1rem; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; padding: 0;}
-        .delete-btn:hover { background-color: #991b1b; }
+        
         .move-admin-btn, .chat-btn { background-color: #374151; color: white; border: none; padding: 5px 8px; border-radius: 5px; font-size: 0.75rem; cursor: pointer; margin-top: 5px; width: 100%;}
         .chat-btn { background-color: var(--accent-purple); }
         .chat-btn:hover { background-color: var(--accent-purple-hover); }
 
+        .guest-badge { font-size: 0.7rem; color: var(--accent-purple); background: rgba(90, 79, 207, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 5px; font-weight: bold;}
+        .subfolder-badge { font-size: 0.7rem; color: var(--text-muted); background: var(--bg-card); border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 5px;}
+
+        /* Admin Controls on Files */
+        .file-checkbox { position: absolute; top: 10px; left: 10px; width: 18px; height: 18px; z-index: 10; cursor: pointer; display: none; accent-color: var(--accent-purple);}
+        .show-checkboxes .file-checkbox { display: block; }
+        .delete-btn { position: absolute; top: 8px; right: 8px; background-color: #dc2626; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: bold; font-size: 1rem; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; padding: 0;}
+        .delete-btn:hover { background-color: #991b1b; }
+
+        /* Batch Action Bar */
         #batch-action-bar { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 1px solid var(--accent-purple); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; gap: 15px; align-items: center; transition: bottom 0.3s ease; z-index: 4000; }
         #batch-action-bar.show { bottom: 20px; }
 
-        /* --- REELORTS (TIKTOK CLONE) STYLES --- */
-        #reelorts-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 5500; display: flex; flex-direction: column; }
-        #reelorts-modal.hidden { display: none; }
-        #reelorts-close-btn { position: absolute; top: 20px; left: 20px; z-index: 5600; background: rgba(0,0,0,0.5); border: none; color: white; font-size: 1.5rem; cursor: pointer; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; padding:0;}
-        #reelorts-close-btn:hover { background: #ef4444; }
-        #reelorts-feed { width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
-        
-        .reelort-post { width: 100%; height: 100vh; scroll-snap-align: start; position: relative; display: flex; justify-content: center; align-items: center; background: #000; }
-        .reelort-media { max-width: 100%; max-height: 100vh; object-fit: contain; }
-        
-        .reelort-actions { position: absolute; right: 20px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 5550; }
-        .reelort-action-btn { background: rgba(0,0,0,0.6); color: white; border: 2px solid var(--accent-purple); border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s; padding: 0; }
-        .reelort-action-btn:hover { transform: scale(1.1); }
-        .reelort-action-btn span.lbl { font-size: 0.7rem; margin-top: 2px; font-family: sans-serif; font-weight: bold;}
-        
-        .reelort-info { position: absolute; left: 20px; bottom: 40px; z-index: 5550; color: white; text-shadow: 1px 1px 3px black; max-width: 70%; }
-        .reelort-info h3 { font-size: 1.2rem; margin-bottom: 5px; word-break: break-all; }
-        .reelort-info p { font-size: 0.9rem; opacity: 0.8; }
-
-        /* --- MODALS & OVERLAYS --- */
-        .locked-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5000; text-align: center; padding: 20px; }
-        .locked-overlay.hidden { display: none; }
-        .modal-box { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); width: 100%; max-width: 400px;}
-        
-        #folder-lock-overlay { position: absolute; z-index: 50; border-radius: 12px;} 
-        #lightbox-content { max-width: 90%; max-height: 85vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        #text-editor-area { width: 100%; height: 400px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; font-family: monospace; resize: none; margin-bottom: 15px; }
-        #game-player-modal iframe { width: 100%; max-width: 900px; height: 600px; border: 2px solid var(--accent-purple); border-radius: 12px; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-        /* --- LIVE CHAT UI --- */
-        #chat-sidebar { position: fixed; top: 0; right: -450px; width: 400px; height: 100vh; background-color: var(--bg-card); border-left: 1px solid var(--border-color); box-shadow: -4px 0 15px rgba(0,0,0,0.5); padding: 20px; transition: right 0.3s ease; z-index: 6000; display: flex; flex-direction: column; }
+        /* --- CHAT --- */
+        #chat-sidebar { position: fixed; top: 0; right: -450px; width: 400px; height: 100vh; background-color: var(--bg-card); border-left: 1px solid var(--border-color); padding: 20px; transition: right 0.3s ease; z-index: 6000; display: flex; flex-direction: column; }
         #chat-sidebar.show { right: 0; }
         #chat-messages { flex-grow: 1; overflow-y: auto; margin-top: 15px; border: 1px solid var(--border-color); background: var(--bg-body); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
-        .chat-msg { background: var(--bg-card); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); text-align: left; position: relative;}
-        .chat-msg-header { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.75rem; color: var(--text-muted); }
-        .chat-msg-content { font-size: 0.85rem; line-height: 1.4; word-break: break-word;}
-        .report-comment-btn { color: #ef4444; background: none; border: none; font-size: 0.75rem; cursor: pointer; padding: 0; }
-        .report-comment-btn:hover { text-decoration: underline; }
-        .chat-input-area { display: flex; gap: 10px; margin-top: 15px; }
+        .chat-msg { background: var(--bg-card); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); text-align: left;}
+        .username-link { color: var(--accent-purple); font-weight: bold; cursor: pointer; text-decoration: underline;}
 
-        /* --- ADMIN DASHBOARD BARS --- */
-        .admin-stat-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
-        .progress-bar-container { background-color: var(--progress-bg); border-radius: 10px; height: 10px; margin-top: 15px; overflow: hidden; width: 100%; display: flex; }
+        /* --- OVERLAYS & MODALS --- */
+        /* THE FIX: !important guarantees that .hidden overrides EVERYTHING, stopping the black screen bug */
+        .locked-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5000; padding: 20px; }
+        .locked-overlay.hidden { display: none !important; }
         
-        .recent-upload-item { display: flex; gap: 10px; margin-bottom: 10px; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-body); align-items: center;}
-        .recent-upload-item img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; background: black;}
-        .recent-upload-info { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
-        .recent-upload-info span { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;}
-        .recent-badge { font-size: 0.65rem; padding: 2px 6px; background: var(--accent-purple); color: white; border-radius: 10px; width: fit-content; margin-top: 3px;}
+        .modal-box { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); width: 100%; max-width: 450px; }
+        #folder-lock-overlay { position: absolute; z-index: 50; border-radius: 12px;} 
+        #lightbox-content { max-width: 90%; max-height: 85vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        #text-editor-area { width: 100%; height: 400px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; font-family: monospace; resize: none; margin-bottom: 15px; }
 
-        /* =====================================================================
-           BART SIMPSON / EMO / STREETWEAR BRUTALIST MUSIC PLAYER ONLY
-           ===================================================================== */
-        #global-music-player {
-            position: fixed; bottom: -150px; left: 50%; transform: translateX(-50%);
-            width: 95%; max-width: 500px;
-            background: #050505;
-            border: 2px solid #ffcc00;
-            box-shadow: 6px 6px 0px #ffcc00;
-            padding: 15px 25px;
-            display: flex; align-items: center; justify-content: space-between;
-            z-index: 9000; transition: bottom 0.4s ease;
-            border-radius: 0;
-        }
+        /* --- REELORTS --- */
+        #reelorts-modal { padding: 0; background: #000; z-index: 5500; }
+        #reelorts-feed { width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        .reelort-post { width: 100%; height: 100vh; scroll-snap-align: start; position: relative; display: flex; justify-content: center; align-items: center; background: #000; }
+        .reelort-media { max-width: 100%; max-height: 100vh; object-fit: contain; }
+        .reelort-actions { position: absolute; right: 20px; bottom: 100px; display: flex; flex-direction: column; gap: 20px; z-index: 5550; }
+        .reelort-action-btn { background: rgba(0,0,0,0.6); color: white; border: 2px solid var(--accent-purple); border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
+
+        /* --- TAGS & PROFILES --- */
+        .user-tag { font-size: 0.65rem; background: var(--border-color); padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase; margin-left: 5px; display: inline-block;}
+        .owner-tag { background: #ef4444; color: white; border-color: #ef4444; }
+        .richest-tag { background: var(--gold); color: black; border-color: var(--gold); }
+
+        /* --- GAMBLING & BOUNTIES --- */
+        .game-card { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; text-align: center;}
+        .bounty-card { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 10px; text-align: left;}
+        .horse-btn { width: 100%; text-align: left; padding: 10px; margin-bottom: 5px; border-radius: 8px; border: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;}
+        .horse-btn.selected { background: var(--accent-purple); color: white; }
+
+        /* --- EMO MUSIC PLAYER --- */
+        #global-music-player { position: fixed; bottom: -150px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: #050505; border: 2px solid #ffcc00; box-shadow: 6px 6px 0px #ffcc00; padding: 15px 25px; display: flex; align-items: center; justify-content: space-between; z-index: 9000; transition: bottom 0.4s ease; border-radius: 0; }
         #global-music-player.show { bottom: 25px; }
         .emo-tag { font-family: 'Teko', sans-serif; color: #ff003c; font-size: 1.3rem; line-height: 1; letter-spacing: 1px; }
         #global-audio-title { font-family: 'Teko', sans-serif; color: #ffcc00; font-size: 1.3rem; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; text-transform: uppercase; margin-top: 3px;}
         #global-audio { filter: grayscale(100%) contrast(120%); height: 35px; width: 220px; }
-        #close-audio-btn { background: transparent; border: none; font-size: 1.5rem; color: #ff003c; cursor: pointer; padding: 0; box-shadow: none; font-family: sans-serif;}
+        #close-audio-btn { background: transparent; border: none; font-size: 1.5rem; color: #ff003c; cursor: pointer; padding: 0; font-family: sans-serif;}
+
+        /* Admin bars */
+        .admin-stat-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
+        .progress-bar-container { background-color: var(--progress-bg); border-radius: 10px; height: 10px; margin-top: 15px; overflow: hidden; width: 100%; display: flex; }
     </style>
 </head>
 <body class="dark-mode">
@@ -177,7 +154,6 @@
             </div>
         </div>
         <div class="header-buttons">
-            <!-- LIVE PRESENCE INDICATOR -->
             <div class="presence-container">
                 <div class="presence-btn" id="presence-btn">🟢 Online: <span id="online-count">1</span></div>
                 <div class="presence-dropdown" id="presence-dropdown">
@@ -185,7 +161,7 @@
                     <div id="presence-users-list"></div>
                 </div>
             </div>
-            
+            <button id="account-btn" class="btn-gold">👤 Login / Account</button>
             <button id="nav-categories-btn">☰ Categories</button>
             <button id="nav-settings-btn">⚙ Settings</button>
         </div>
@@ -196,6 +172,8 @@
             <button class="cat-btn" data-cat="files">Files</button>
             <button class="cat-btn" data-cat="audio">Audio</button>
             <button class="cat-btn" data-cat="games" style="color: #10b981; border-color: #10b981;">Games 🎮</button>
+            <button class="cat-btn" data-cat="bounties" style="color: var(--gold); border-color: var(--gold);">Bounty Board 🎯</button>
+            <button class="cat-btn" data-cat="gambling" style="color: #ef4444; border-color: #ef4444;">Gambling 🎲</button>
             <button class="cat-btn" data-cat="review" id="nav-review-btn" style="color: #f59e0b; border-color: #f59e0b; display: none;">Review ⚠️</button>
             <button class="cat-btn" data-cat="admin" id="nav-admin-btn" style="color: #ef4444; border-color: #ef4444; display: none;">Admin 🔒</button>
         </div>
@@ -208,22 +186,25 @@
         <button id="theme-toggle-btn" style="width: 100%;">Toggle Dark/Light Mode</button>
         
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-            <h3>Admin Access</h3>
+            <h3>Admin / Owner Access</h3>
             <div id="admin-login-ui">
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Enter code to enable advanced features.</p>
-                <input type="password" id="admin-password-input" placeholder="Admin Code" style="width: 100%; margin-bottom: 10px;">
+                <input type="password" id="admin-password-input" placeholder="Admin Code or Owner Code" style="width: 100%; margin: 10px 0;">
                 <button id="admin-submit-btn" class="btn-purple" style="width: 100%;">Unlock</button>
             </div>
 
             <div id="admin-unlocked-ui" style="display: none;">
-                <p style="font-size: 0.85rem; color: #10b981; margin-bottom: 10px; font-weight: bold;">✓ Admin Unlocked</p>
-                <button id="admin-remove-perms-btn" style="width: 100%; background-color: #ef4444; color: white; border: none;">Remove Perms (Globally)</button>
+                <p id="owner-status-text" style="font-size: 0.85rem; color: #10b981; font-weight: bold; margin-bottom: 10px;">✓ Admin Unlocked</p>
+                <button id="admin-remove-perms-btn" style="width: 100%; background-color: #ef4444; color: white; border: none; margin-bottom: 15px;">Revoke Perms</button>
                 
-                <!-- MANUAL UPLOAD KEY GENERATOR -->
+                <!-- RICHEST USERS -->
+                <div id="owner-leaderboard-ui" style="display:none; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                    <h3 style="color: var(--gold);">💰 Richest Users</h3>
+                    <div id="leaderboard-container" style="margin-top: 10px; font-size: 0.85rem;"></div>
+                </div>
+
+                <!-- KEY GENERATORS -->
                 <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <h3 style="font-size: 1rem; margin-bottom: 10px;">Manual Key Generator</h3>
-                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Generate up to two specific upload keys. Valid for 2 hours.</p>
-                    
                     <div style="border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; margin-bottom: 10px; background: var(--bg-body);">
                         <span style="font-size: 0.8rem; font-weight: bold;">Slot 1</span>
                         <span id="slot1-status" style="float: right; font-size: 0.7rem; color: var(--text-muted);">No active key</span>
@@ -247,7 +228,6 @@
                 <!-- AUTO-KEY BOT -->
                 <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <h4 style="font-size: 1rem;">Auto-Key Bot</h4>
-                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Bot picks one randomly every hour.</p>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:10px;">
                         <input type="text" id="bot-word-1" placeholder="Word 1"> <input type="text" id="bot-word-2" placeholder="Word 2">
                         <input type="text" id="bot-word-3" placeholder="Word 3"> <input type="text" id="bot-word-4" placeholder="Word 4">
@@ -261,10 +241,10 @@
                     <input type="text" id="bot-active-key-display" readonly placeholder="Bot Key Here..." style="width: 100%; margin-top: 5px; border-color: var(--accent-purple); color: var(--accent-purple);">
                 </div>
 
-                <!-- RECENT UPLOADS -->
+                <!-- REPORT MENU -->
                 <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                    <h3 style="font-size: 1rem; margin-bottom: 10px;">Recent Uploads</h3>
-                    <div id="recent-uploads-container"><p style="font-size: 0.8rem; color: var(--text-muted);">Loading recent files...</p></div>
+                    <h3 style="font-size: 1rem; margin-bottom: 10px; color: #ef4444;">Report Menu 🚨</h3>
+                    <div id="reported-comments-container"><p style="font-size: 0.8rem; color: var(--text-muted);">No reports pending.</p></div>
                 </div>
             </div>
             <p id="admin-status-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: bold;"></p>
@@ -274,7 +254,6 @@
     <!-- MAIN APP CONTAINER -->
     <div class="main-container">
         
-        <!-- LEFT COLUMN -->
         <div class="left-col">
             <!-- UPLOAD CARD -->
             <div class="card" id="upload-card">
@@ -283,48 +262,79 @@
                     <span id="upload-status" style="font-weight: bold;">Drag & Drop files here, or</span>
                     <input type="file" id="file-input" style="display: none;">
                     <button class="btn-purple" id="choose-file-btn">Choose files</button>
-                    <p style="font-size: 0.75rem; color: var(--text-muted);">Non-admins require a valid Upload Key.</p>
                 </div>
-                <div class="upload-controls">
-                    <div><strong>Upload into:</strong> 
-                        <select id="upload-folder-select">
-                            <option value="pictures">Pictures</option>
-                            <option value="videos">Videos</option>
-                            <option value="audio">Audio</option>
-                            <option value="files">Files</option>
-                            <option value="admin">Admin 🔒</option>
-                        </select>
-                    </div>
-                    <div><strong>Sub-Folder (Optional):</strong>
-                        <input type="text" id="upload-subfolder-input" placeholder="e.g. Memes, Vacation...">
-                    </div>
+                <div style="display:flex; gap:10px;">
+                    <select id="upload-folder-select" style="flex:1;">
+                        <option value="pictures">Pictures</option>
+                        <option value="videos">Videos</option>
+                        <option value="audio">Audio</option>
+                        <option value="files">Files</option>
+                        <option value="admin">Admin 🔒</option>
+                    </select>
+                    <input type="text" id="upload-subfolder-input" placeholder="Subfolder (Optional)" style="flex:1;">
                 </div>
             </div>
 
-            <!-- GALLERY CARD -->
-            <div class="card" style="position: relative; min-height: 400px;">
+            <!-- DYNAMIC CONTENT CARD -->
+            <div class="card" style="min-height: 400px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <h2 id="gallery-title" style="margin: 0;">Pictures</h2>
                 </div>
                 
-                <!-- SEARCH, SORT, & SUB-FOLDER FILTER -->
-                <div class="search-sort-bar">
+                <div class="search-sort-bar" id="gallery-controls">
                     <input type="text" id="search-bar" placeholder="Search files...">
-                    <select id="subfolder-filter">
-                        <option value="ALL">All Folders</option>
-                    </select>
+                    <select id="subfolder-filter"><option value="ALL">All Folders</option></select>
                     <select id="sort-select">
                         <option value="newest">Newest First</option>
                         <option value="oldest">Oldest First</option>
                         <option value="az">Name A-Z</option>
-                        <option value="za">Name Z-A</option>
                     </select>
                 </div>
 
-                <div id="gallery-container" class="gallery-grid"><p style="color: var(--text-muted);">Loading files...</p></div>
+                <div id="gallery-container" class="gallery-grid"><p style="color: var(--text-muted);">Loading...</p></div>
                 
-                <!-- Folder Lock Overlay -->
-                <div id="folder-lock-overlay" class="locked-overlay hidden">
+                <!-- BOUNTY BOARD UI -->
+                <div id="bounty-board-container" style="display:none;">
+                    <div style="background: var(--bg-body); padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid var(--border-color);">
+                        <h3>Create New Bounty</h3>
+                        <input type="text" id="bounty-desc" placeholder="What do you need? (e.g., 'Picture of a dog')" style="width:100%; margin:10px 0;">
+                        <input type="number" id="bounty-reward" placeholder="Reward (🪙)" style="width:100%; margin-bottom:10px;">
+                        <button id="create-bounty-btn" class="btn-gold" style="width:100%;">Post Bounty</button>
+                    </div>
+                    <div id="active-bounties-list"></div>
+                </div>
+
+                <!-- GAMBLING UI -->
+                <div id="gambling-container" style="display:none;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div class="game-card">
+                            <h3>Roulette 🎡</h3>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin:5px 0;">50/50 Chance. Win = +35% Profit.</p>
+                            <input type="number" id="roulette-bet" placeholder="Bet Amount..." style="width:100%; margin-bottom:10px;">
+                            <div style="display:flex; gap:10px;">
+                                <button id="play-red" style="flex:1; background:#ef4444; color:white; border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer;">Bet RED</button>
+                                <button id="play-black" style="flex:1; background:#111827; color:white; border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer;">Bet BLACK</button>
+                            </div>
+                        </div>
+
+                        <div class="game-card">
+                            <h3>Horse Racing 🐎</h3>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin:5px 0;">Pick 1 of 6. Win = 5x Profit!</p>
+                            <input type="number" id="horse-bet" placeholder="Bet Amount..." style="width:100%; margin-bottom:10px;">
+                            <div id="horse-list">
+                                <div class="horse-btn" data-horse="Pilip">🐎 Pilip</div>
+                                <div class="horse-btn" data-horse="Krillip">🐎 Krillip</div>
+                                <div class="horse-btn" data-horse="Brillip">🐎 Brillip</div>
+                                <div class="horse-btn" data-horse="Drillip">🐎 Drillip</div>
+                                <div class="horse-btn" data-horse="Lrippip">🐎 Lrippip</div>
+                                <div class="horse-btn" data-horse="Frillip">🐎 Frillip</div>
+                            </div>
+                            <button id="play-horse" class="btn-gold" style="width:100%; margin-top:10px; padding:10px; border-radius:4px;">Start Race!</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="folder-lock-overlay" class="locked-overlay hidden" style="border-radius: 12px;">
                     <div style="text-align: center;">
                         <h3 style="color: #ef4444; font-size: 1.5rem; margin-bottom: 10px;">Access Denied</h3>
                         <button id="return-home-btn" class="btn-purple">Return To Home</button>
@@ -333,56 +343,28 @@
             </div>
         </div>
 
-        <!-- RIGHT COLUMN (DASHBOARD) -->
         <div class="right-col">
-            <!-- REELORTS BUTTON (ONLY SHOWS IN VIDEOS CATEGORY) -->
-            <div class="card" id="reelorts-btn-card" style="display: none; border-color: var(--accent-purple); text-align: center; padding: 30px;">
+            <div class="card" id="reelorts-btn-card" style="display: none; text-align: center; border-color: var(--accent-purple);">
                 <h3 style="margin-bottom: 15px; color: var(--accent-purple);">Endless Feed</h3>
-                <button id="enter-reelorts-btn" class="btn-purple" style="width: 100%; font-size: 1.1rem; padding: 15px;">📱 Enter Reelorts</button>
+                <button id="enter-reelorts-btn" class="btn-purple" style="width: 100%;">📱 Enter Reelorts</button>
             </div>
-
-            <!-- ADMIN DASHBOARD -->
+            
             <div class="card" id="admin-dashboard-card" style="display: none; border-color: var(--accent-purple);">
                 <h2 style="color: var(--accent-purple); margin-bottom: 15px;">Admin Dashboard</h2>
-                
-                <!-- HEALTH DROPDOWN -->
-                <div style="margin-bottom: 15px; font-size: 0.9rem;">
-                    <details>
-                        <summary style="cursor: pointer; font-weight: bold; outline: none;">
-                            Supabase Status: <span id="server-status-main">Checking...</span>
-                        </summary>
-                        <div style="margin-top: 10px; padding-left: 10px; border-left: 2px solid var(--border-color); font-size: 0.85rem;">
-                            <div class="admin-stat-row"><span>Database:</span> <span id="status-db">Checking...</span></div>
-                            <div class="admin-stat-row"><span>Storage:</span> <span id="status-storage">Checking...</span></div>
-                            <div class="admin-stat-row"><span>Auth:</span> <span id="status-auth">Checking...</span></div>
-                            <div class="admin-stat-row"><span>Realtime:</span> <span id="status-realtime">Checking...</span></div>
-                            <div class="admin-stat-row"><span>Functions:</span> <span id="status-functions">Checking...</span></div>
-                            <div class="admin-stat-row"><span>API Gateway:</span> <span id="status-api">Checking...</span></div>
-                        </div>
-                    </details>
-                </div>
-
+                <div class="admin-stat-row"><span>Supabase:</span> <span id="server-status-main" style="color:#10b981">🟢 Healthy</span></div>
                 <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
-                
                 <h3 style="font-size: 1rem; margin-bottom: 10px;">Storage (350MB Max)</h3>
-                <div class="admin-stat-row"><span>Videos:</span> <span id="stat-videos" style="color: #ef4444;">0.00 MB</span></div>
-                <div class="admin-stat-row"><span>Pictures:</span> <span id="stat-pictures" style="color: #eab308;">0.00 MB</span></div>
-                <div class="admin-stat-row"><span>Audio:</span> <span id="stat-audio" style="color: #ec4899;">0.00 MB</span></div>
-                <div class="admin-stat-row"><span>Files:</span> <span id="stat-files" style="color: #8b4513;">0.00 MB</span></div>
-                <div class="admin-stat-row" style="color: var(--accent-purple); font-weight: bold; margin-top: 10px;"><span>Admin:</span> <span id="stat-admin">0.00 MB</span></div>
+                <div class="admin-stat-row"><span>Videos:</span> <span id="stat-videos">0.00 MB</span></div>
+                <div class="admin-stat-row"><span>Pictures:</span> <span id="stat-pictures">0.00 MB</span></div>
+                <div class="admin-stat-row"><span>Audio:</span> <span id="stat-audio">0.00 MB</span></div>
+                <div class="admin-stat-row"><span>Files:</span> <span id="stat-files">0.00 MB</span></div>
+                <div class="admin-stat-row" style="color: var(--accent-purple); font-weight: bold; margin-top: 10px;"><span>Admin Vault:</span> <span id="stat-admin">0.00 MB</span></div>
                 
                 <div class="progress-bar-container">
                     <div id="bar-videos" style="background: #ef4444; width: 0%;"></div>
                     <div id="bar-pictures" style="background: #eab308; width: 0%;"></div>
                     <div id="bar-audio" style="background: #ec4899; width: 0%;"></div>
                     <div id="bar-files" style="background: #8b4513; width: 0%;"></div>
-                </div>
-                <p style="text-align: right; font-size: 0.8rem; margin-top: 5px; font-weight: bold;"><span id="stat-total">0.00</span> / 350.00 MB</p>
-
-                <!-- REPORT MENU -->
-                <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                    <h3 style="font-size: 1rem; margin-bottom: 10px; color: #ef4444;">Report Menu 🚨</h3>
-                    <div id="reported-comments-container"><p style="font-size: 0.8rem; color: var(--text-muted);">No reports pending.</p></div>
                 </div>
             </div>
 
@@ -394,54 +376,77 @@
         </div>
     </div>
 
-    <!-- FLOATING BATCH ACTION BAR -->
+    <!-- REELORTS FULLSCREEN FEED -->
+    <div id="reelorts-modal" class="locked-overlay hidden" style="padding:0; background:#000; z-index: 5500;">
+        <button id="reelorts-close-btn" style="position:absolute; top:20px; left:20px; z-index:5600; background:rgba(0,0,0,0.5); color:white; border:none; padding:15px; border-radius:50%; cursor:pointer;">✖</button>
+        <div id="reelorts-feed" style="width:100%; height:100%; overflow-y:scroll; scroll-snap-type:y mandatory;"></div>
+    </div>
+
+    <!-- LIVE CHAT SIDEBAR -->
+    <div id="chat-sidebar">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 id="chat-title" style="font-size: 1.1rem;">Live Chat</h3>
+            <button id="close-chat-btn" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer;">✖</button>
+        </div>
+        <div id="chat-messages"></div>
+        <div class="chat-input-area" style="display:flex; gap:10px; margin-top:10px;">
+            <input type="text" id="chat-input" placeholder="Message..." style="flex:1;">
+            <button id="chat-send-btn" class="btn-purple">Send</button>
+        </div>
+    </div>
+
+    <!-- BATCH ACTION BAR -->
     <div id="batch-action-bar">
         <span style="font-weight: bold; color: var(--accent-purple);"><span id="batch-count">0</span> Selected</span>
         <button class="btn-purple" id="batch-move-btn">Move to Admin 🔒</button>
         <button id="batch-delete-btn" style="background: #ef4444; color: white; border: none;">Delete Selected X</button>
     </div>
 
-    <!-- EMO / BART SIMPSON MUSIC PLAYER (ISOLATED DESIGN) -->
-    <div id="global-music-player">
-        <div style="display:flex; flex-direction:column; min-width: 150px;">
-            <span class="emo-tag">💔 NO EMOTIONS</span>
-            <span id="global-audio-title">TRACK NAME</span>
-        </div>
-        <audio id="global-audio" controls></audio>
-        <button id="close-audio-btn">✖</button>
-    </div>
-
-    <!-- LIVE CHAT SIDEBAR / MODAL -->
-    <div id="chat-sidebar">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3 id="chat-title" style="font-size: 1.1rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">Live Chat</h3>
-            <button id="close-chat-btn" style="background:transparent; color:var(--text-main); border:none; font-size:1.2rem;">✖</button>
-        </div>
-        <div id="chat-messages"></div>
-        <div class="chat-input-area" id="chat-input-area">
-            <input type="text" id="chat-input" placeholder="Send a message..." style="width:100%;">
-            <button id="chat-send-btn" class="btn-purple">Send</button>
-        </div>
-        <p id="chat-readonly-msg" style="display:none; color:var(--accent-red); font-size:0.8rem; text-align:center; margin-top:10px; font-weight:bold;">YOU ARE IN READ-ONLY MODE.</p>
-    </div>
-
     <!-- MODALS -->
-
-    <!-- 1. Comment Name Gate Modal -->
-    <div id="comment-name-modal" class="locked-overlay hidden" style="z-index: 7000;">
+    
+    <!-- Account / Login Modal -->
+    <div id="account-modal" class="locked-overlay hidden" style="z-index: 8000;">
         <div class="modal-box">
-            <h3 style="margin-bottom:10px;">Who are you?</h3>
-            <p style="color: var(--text-muted); margin-bottom: 15px; font-size:0.9rem;">Input a name or you won't have comment access.</p>
-            <input type="text" id="comment-name-input" placeholder="Your Chat Name..." style="width: 100%; margin-bottom: 15px;">
-            <div style="display: flex; gap: 10px; flex-direction: column;">
-                <button id="save-comment-name-btn" class="btn-purple">Save Name</button>
-                <button id="revoke-comment-btn" style="background: #ef4444; color: white; border: none;">Revoke Comment Access</button>
+            <h3 style="margin-bottom:10px;">Account Access</h3>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px;">Login or create an account to earn Tyler Coins!</p>
+            <input type="text" id="acc-username" placeholder="Username" style="width:100%; margin-bottom:10px;">
+            <input type="password" id="acc-pin" placeholder="Secret PIN" style="width:100%; margin-bottom:15px;">
+            <div style="display:flex; gap:10px;">
+                <button id="acc-cancel-btn" style="flex:1;">Cancel</button>
+                <button id="acc-login-btn" class="btn-gold" style="flex:1;">Login / Register</button>
             </div>
         </div>
     </div>
 
-    <!-- 2. Key / Review Modal -->
-    <div id="key-modal" class="locked-overlay hidden">
+    <!-- User Profile Modal -->
+    <div id="profile-modal" class="locked-overlay hidden" style="z-index: 8000;">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2 id="prof-username">User</h2>
+                <button id="prof-close-btn" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer;">✖</button>
+            </div>
+            <div id="prof-tags" style="margin-bottom:15px;"></div>
+            <h3 style="color:var(--gold); margin-bottom:20px;">Balance: <span id="prof-coins">0</span> 🪙</h3>
+            
+            <button id="prof-daily-btn" class="btn-gold" style="width:100%; margin-bottom:15px; display:none; padding:10px; border-radius:8px;">Claim Daily 50 🪙</button>
+
+            <!-- OWNER ONLY CONTROLS -->
+            <div id="prof-owner-controls" style="display:none; border-top:1px solid var(--border-color); padding-top:15px;">
+                <h4 style="color:#ef4444; margin-bottom:10px;">👑 Owner Controls</h4>
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="owner-add-tag-input" placeholder="Custom Tag..." style="flex:1;">
+                    <button id="owner-add-tag-btn" class="btn-purple">+ Tag</button>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="owner-add-coin-input" placeholder="Coins to add/remove..." style="flex:1;">
+                    <button id="owner-add-coin-btn" class="btn-gold">Give 🪙</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key & Guest Modals -->
+    <div id="key-modal" class="locked-overlay hidden" style="z-index: 7000;">
         <div class="modal-box">
             <h3 style="margin-bottom:10px;">Upload Key Required</h3>
             <p style="color: var(--text-muted); margin-bottom: 15px; font-size:0.9rem;">Enter upload key or submit for admin review.</p>
@@ -454,27 +459,33 @@
             </div>
         </div>
     </div>
-
-    <!-- 3. Guest Name Modal -->
-    <div id="guest-modal" class="locked-overlay hidden">
+    <div id="guest-modal" class="locked-overlay hidden" style="z-index: 7000;">
         <div class="modal-box">
             <h3 style="margin-bottom:10px;">Identify Yourself</h3>
-            <p style="color: var(--text-muted); margin-bottom: 15px; font-size:0.9rem;">A guest name is required to upload.</p>
+            <p style="color: var(--text-muted); margin-bottom: 15px; font-size:0.9rem;">A guest name is required to upload without an account.</p>
             <input type="text" id="guest-name-input" placeholder="Your Name/Alias..." style="width: 100%; margin-bottom: 15px;">
-            <button id="submit-guest-btn" class="btn-purple" style="width: 100%;" disabled>Continue Upload</button>
+            <button id="submit-guest-btn" class="btn-purple" style="width: 100%; padding:10px;" disabled>Continue Upload</button>
         </div>
     </div>
 
-    <!-- 4. Lightbox -->
-    <div id="lightbox-modal" class="locked-overlay hidden" style="flex-direction: column;">
+    <!-- Game Alert Modal -->
+    <div id="game-alert-modal" class="locked-overlay hidden" style="z-index: 9000;">
+        <div class="modal-box" style="text-align:center;">
+            <h1 id="game-alert-title" style="font-size:3rem; margin-bottom:10px;">🎰</h1>
+            <p id="game-alert-desc" style="font-size:1.2rem; margin-bottom:20px;">Spinning...</p>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox-modal" class="locked-overlay hidden" style="flex-direction: column; z-index: 5000;">
         <div style="width: 100%; max-width: 900px; display: flex; justify-content: flex-end; margin-bottom: 10px;">
             <button id="close-lightbox-btn" style="background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">✖ Close Preview</button>
         </div>
         <div id="lightbox-media-container" style="display:flex; justify-content:center; align-items:center;"></div>
     </div>
 
-    <!-- 5. Text Editor -->
-    <div id="text-editor-modal" class="locked-overlay hidden">
+    <!-- Text Editor -->
+    <div id="text-editor-modal" class="locked-overlay hidden" style="z-index: 5000;">
         <div class="modal-box" style="max-width: 800px; width: 90%;">
             <h3 id="text-editor-title" style="margin-bottom: 10px;">Editing File</h3>
             <textarea id="text-editor-area"></textarea>
@@ -485,17 +496,21 @@
         </div>
     </div>
 
-    <!-- 6. Game Player -->
-    <div id="game-player-modal" class="locked-overlay hidden" style="flex-direction: column;">
+    <!-- Game Player -->
+    <div id="game-player-modal" class="locked-overlay hidden" style="flex-direction: column; z-index: 5000;">
         <h2 id="game-player-title" style="color: white; margin-bottom: 15px;">Playing Game</h2>
-        <iframe id="game-iframe" src="" frameborder="0"></iframe>
-        <button id="close-game-btn" style="margin-top:20px; background:#ef4444; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">Close Game</button>
+        <iframe id="game-iframe" src="" frameborder="0" style="width:100%; max-width:900px; height:600px; border: 2px solid var(--accent-purple); border-radius:12px; background:#000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"></iframe>
+        <button id="close-game-btn" class="btn-purple" style="margin-top:20px; background:#ef4444;">Close Game</button>
     </div>
 
-    <!-- 7. REELORTS FULLSCREEN FEED -->
-    <div id="reelorts-modal" class="locked-overlay hidden" style="padding:0; background:#000; z-index: 5500;">
-        <button id="reelorts-close-btn">✖</button>
-        <div id="reelorts-feed"></div>
+    <!-- EMO / BART SIMPSON MUSIC PLAYER -->
+    <div id="global-music-player">
+        <div style="display:flex; flex-direction:column; min-width: 150px;">
+            <span class="emo-tag">💔 NO EMOTIONS</span>
+            <span id="global-audio-title">TRACK NAME</span>
+        </div>
+        <audio id="global-audio" controls></audio>
+        <button id="close-audio-btn">✖</button>
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
@@ -512,371 +527,197 @@
             const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
             const BUCKET_NAME = 'tyler-files';
             
-            // CORE STATE
+            // STATE
             let currentCategory = 'pictures';
-            let isAdminUnlocked = false;
-            window.adminSessionStart = 0; 
-            let failedAttempts = 0; const maxAttempts = 10; const correctPassword = "Tyl3rF1les";
-            let botInterval = null; 
+            let isAdminUnlocked = false; let isOwner = false;
             let loadedFilesList =[]; 
             let selectedFilesSet = new Set(); 
             let dynamicSubfolders = new Set();
-
-            // PRESENCE & CHAT STATE
+            
+            // ACCOUNT & PRESENCE STATE
+            let currentUser = null; 
+            let richestUser = ""; 
             let localUserName = `Guest-${Math.floor(Math.random()*9000)+1000}`;
-            let hasCommentAccess = true;
-            let isNameSetForChat = false;
             let currentChatFile = "";
+            let botInterval = null;
+            window.adminSessionStart = 0; 
+            const maxAttempts = 10; let failedAttempts = 0; const correctPassword = "Tyl3rF1les";
+
             const presenceChannel = supabase.channel('online-users');
             const chatChannel = supabase.channel('public:comments');
+            const profileChannel = supabase.channel('public:profiles');
+            const bountyChannel = supabase.channel('public:bounties');
 
-            // DOM Map (CLEAN AND UNIQUE)
+            // DOM MAP 
             const dom = {
                 catDropdown: document.getElementById('categories-dropdown'), sidebar: document.getElementById('settings-sidebar'),
-                gallery: document.getElementById('gallery-container'), uploadCard: document.getElementById('upload-card'),
-                dragZone: document.getElementById('drag-drop-zone'), fileInput: document.getElementById('file-input'),
-                uploadStatus: document.getElementById('upload-status'), folderSelect: document.getElementById('upload-folder-select'),
-                subfolderInput: document.getElementById('upload-subfolder-input'), subfolderFilter: document.getElementById('subfolder-filter'),
-                searchBar: document.getElementById('search-bar'), sortSelect: document.getElementById('sort-select'),
+                gallery: document.getElementById('gallery-container'), galleryControls: document.getElementById('gallery-controls'),
+                uploadCard: document.getElementById('upload-card'),
+                dragZone: document.getElementById('drag-drop-zone'), fileInput: document.getElementById('file-input'), 
+                uploadStatus: document.getElementById('upload-status'), folderSelect: document.getElementById('upload-folder-select'), 
+                subfolderInput: document.getElementById('upload-subfolder-input'),
+                searchBar: document.getElementById('search-bar'), sortSelect: document.getElementById('sort-select'), subfolderFilter: document.getElementById('subfolder-filter'),
+                chatSidebar: document.getElementById('chat-sidebar'), chatMessages: document.getElementById('chat-messages'), chatInput: document.getElementById('chat-input'),
+                reelortsCard: document.getElementById('reelorts-btn-card'), reelortsBtn: document.getElementById('enter-reelorts-btn'), reelortsModal: document.getElementById('reelorts-modal'), reelortsFeed: document.getElementById('reelorts-feed'),
+                accBtn: document.getElementById('account-btn'), accModal: document.getElementById('account-modal'),
+                profModal: document.getElementById('profile-modal'), bountyContainer: document.getElementById('bounty-board-container'), gambleContainer: document.getElementById('gambling-container'),
                 batchBar: document.getElementById('batch-action-bar'), batchCount: document.getElementById('batch-count'),
                 lightbox: document.getElementById('lightbox-modal'), lightboxMedia: document.getElementById('lightbox-media-container'),
                 editorModal: document.getElementById('text-editor-modal'), editorArea: document.getElementById('text-editor-area'), editorTitle: document.getElementById('text-editor-title'),
-                keyModal: document.getElementById('key-modal'), guestModal: document.getElementById('guest-modal'), guestInput: document.getElementById('guest-name-input'),
                 musicPlayer: document.getElementById('global-music-player'), audioTitle: document.getElementById('global-audio-title'), audioTag: document.getElementById('global-audio'),
-                chatSidebar: document.getElementById('chat-sidebar'), chatMessages: document.getElementById('chat-messages'), chatInput: document.getElementById('chat-input'),
-                chatNameModal: document.getElementById('comment-name-modal'),
                 presenceBtn: document.getElementById('presence-btn'), presenceDropdown: document.getElementById('presence-dropdown'), presenceList: document.getElementById('presence-users-list'),
-                reelortsCard: document.getElementById('reelorts-btn-card'), reelortsBtn: document.getElementById('enter-reelorts-btn'), reelortsModal: document.getElementById('reelorts-modal'), reelortsFeed: document.getElementById('reelorts-feed'), reelortsClose: document.getElementById('reelorts-close-btn')
+                keyModal: document.getElementById('key-modal'), guestModal: document.getElementById('guest-modal'), guestInput: document.getElementById('guest-name-input')
             };
 
-            // --- REALTIME PRESENCE LOGIC ---
-            presenceChannel.on('presence', { event: 'sync' }, () => {
-                const state = presenceChannel.presenceState();
-                let total = 0; let activeUsers =[];
-                for (const [key, presences] of Object.entries(state)) {
-                    total += presences.length;
-                    presences.forEach(p => activeUsers.push(p.user));
-                }
-                document.getElementById('online-count').innerText = total;
-                
-                dom.presenceList.innerHTML = '';
-                activeUsers.forEach(u => {
-                    dom.presenceList.insertAdjacentHTML('beforeend', `<div class="presence-user">👤 ${u}</div>`);
-                });
-            }).subscribe(async (status) => {
-                if (status === 'SUBSCRIBED') await presenceChannel.track({ user: localUserName });
-            });
-
-            dom.presenceBtn.onclick = (e) => {
-                e.stopPropagation();
-                if(isAdminUnlocked) dom.presenceDropdown.classList.toggle('show');
-                else alert("Admin permissions required to view the guest list.");
-            };
-            window.addEventListener('click', (e) => { if(!dom.presenceBtn.contains(e.target) && !dom.presenceDropdown.contains(e.target)) dom.presenceDropdown.classList.remove('show'); });
-
-            // --- REALTIME CHAT LOGIC ---
-            chatChannel.on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, payload => {
-                if (currentChatFile) loadChatMessages(currentChatFile); 
-                if (isAdminUnlocked) fetchReportedComments(); 
+            // --- REALTIME SYNC ---
+            profileChannel.on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, payload => {
+                if(currentUser && payload.new.username === currentUser.username) { currentUser = payload.new; updateTopBar(); }
+                calculateRichestUser(); if(isOwner) renderLeaderboard();
             }).subscribe();
 
-            document.getElementById('close-chat-btn').onclick = () => { dom.chatSidebar.classList.remove('show'); currentChatFile = ""; };
+            presenceChannel.on('presence', { event: 'sync' }, () => {
+                const state = presenceChannel.presenceState(); let total = 0; let activeUsers =[];
+                for (const[key, presences] of Object.entries(state)) { total += presences.length; presences.forEach(p => activeUsers.push(p.user)); }
+                document.getElementById('online-count').innerText = total;
+                dom.presenceList.innerHTML = '';
+                activeUsers.forEach(u => { dom.presenceList.insertAdjacentHTML('beforeend', `<div class="presence-user">👤 ${u}</div>`); });
+            }).subscribe(async (status) => { if (status === 'SUBSCRIBED') await presenceChannel.track({ user: localUserName }); });
 
-            window.openChat = function(fileName) {
-                if(!isNameSetForChat) {
-                    currentChatFile = fileName; 
-                    dom.chatNameModal.classList.remove('hidden');
-                    return;
-                }
-                launchChat(fileName);
-            };
+            dom.presenceBtn.addEventListener('click', (e) => { e.stopPropagation(); if(isAdminUnlocked) dom.presenceDropdown.classList.toggle('show'); else alert("Admin perms required to view guest list."); });
 
-            function launchChat(fileName) {
-                currentChatFile = fileName;
-                const cleanName = parseFileName(fileName).realName;
-                document.getElementById('chat-title').innerText = `Chat: ${cleanName}`;
-                dom.chatSidebar.classList.add('show');
-                
-                if(!hasCommentAccess) {
-                    document.getElementById('chat-input-area').style.display = 'none';
-                    document.getElementById('chat-readonly-msg').style.display = 'block';
-                } else {
-                    document.getElementById('chat-input-area').style.display = 'flex';
-                    document.getElementById('chat-readonly-msg').style.display = 'none';
+            // --- ACCOUNT LOGIC ---
+            dom.accBtn.addEventListener('click', () => { if(currentUser) openProfile(currentUser.username); else dom.accModal.classList.remove('hidden'); });
+            document.getElementById('acc-cancel-btn').addEventListener('click', () => dom.accModal.classList.add('hidden'));
+
+            document.getElementById('acc-login-btn').addEventListener('click', async () => {
+                const user = document.getElementById('acc-username').value.trim(); const pin = document.getElementById('acc-pin').value.trim();
+                if(!user || !pin) return alert("Enter both fields.");
+
+                const { data } = await supabase.from('profiles').select('*').eq('username', user).single();
+                if (data) { if (data.pin !== pin) return alert("Wrong PIN!"); currentUser = data; } 
+                else {
+                    const { data: newUser, error } = await supabase.from('profiles').insert([{ username: user, pin: pin }]).select().single();
+                    if(error) return alert("Error creating account."); currentUser = newUser;
                 }
-                loadChatMessages(fileName);
+                localUserName = currentUser.username; await presenceChannel.track({ user: localUserName });
+                dom.accModal.classList.add('hidden'); updateTopBar(); calculateRichestUser();
+                alert(`Welcome, ${currentUser.username}!`);
+            });
+
+            function updateTopBar() {
+                if(!currentUser) { dom.accBtn.innerHTML = "👤 Login / Account"; return; }
+                dom.accBtn.innerHTML = `👤 ${currentUser.username} | 🪙 ${currentUser.coins}`;
             }
 
-            document.getElementById('save-comment-name-btn').onclick = async () => {
-                const name = document.getElementById('comment-name-input').value.trim();
-                if(!name) return alert("Enter a name!");
-                localUserName = name; isNameSetForChat = true; hasCommentAccess = true;
-                dom.chatNameModal.classList.add('hidden');
-                await presenceChannel.track({ user: localUserName }); 
-                if(currentChatFile) launchChat(currentChatFile);
-            };
-
-            document.getElementById('revoke-comment-btn').onclick = () => {
-                isNameSetForChat = true; hasCommentAccess = false;
-                dom.chatNameModal.classList.add('hidden');
-                if(currentChatFile) launchChat(currentChatFile);
-            };
-
-            async function loadChatMessages(fileName) {
-                dom.chatMessages.innerHTML = '<p style="color:var(--text-muted); font-size:0.8rem; text-align:center;">Loading messages...</p>';
-                const { data, error } = await supabase.from('comments').select('*').eq('file_name', fileName).order('created_at', { ascending: true });
-                if(error) { dom.chatMessages.innerHTML = '<p style="color:red; font-size:0.8rem;">Error loading chat.</p>'; return; }
-                
-                dom.chatMessages.innerHTML = '';
-                if(data.length === 0) { dom.chatMessages.innerHTML = '<p style="color:var(--text-muted); font-size:0.8rem; text-align:center; margin-top:20px;">No comments yet. Be the first!</p>'; return; }
-
-                data.forEach(msg => {
-                    const div = document.createElement('div'); div.className = 'chat-msg';
-                    div.innerHTML = `
-                        <div class="chat-msg-header">
-                            <strong style="color:var(--accent-purple);">${msg.author}</strong>
-                            <span>
-                                ${msg.is_reported ? '<span style="color:#ef4444; margin-right:5px;">[Reported]</span>' : ''}
-                                <button class="report-comment-btn" onclick="reportComment('${msg.id}')">🚨 Report</button>
-                            </span>
-                        </div>
-                        <div class="chat-msg-content">${msg.content}</div>
-                    `;
-                    dom.chatMessages.appendChild(div);
-                });
-                dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight; 
+            async function calculateRichestUser() {
+                const { data } = await supabase.from('profiles').select('username, coins').order('coins', { ascending: false }).limit(1);
+                if(data && data.length > 0) richestUser = data[0].username;
             }
+            calculateRichestUser();
 
-            document.getElementById('chat-send-btn').onclick = async () => {
-                const text = dom.chatInput.value.trim(); if(!text || !currentChatFile) return;
-                dom.chatInput.value = "";
-                await supabase.from('comments').insert([{ file_name: currentChatFile, author: localUserName, content: text }]);
-            };
+            // --- PROFILE MODAL ---
+            document.getElementById('prof-close-btn').addEventListener('click', () => dom.profModal.classList.add('hidden'));
+            
+            window.openProfile = async function(targetUsername) {
+                const { data: prof } = await supabase.from('profiles').select('*').eq('username', targetUsername).single();
+                if(!prof) return alert("User not found.");
 
-            window.reportComment = async function(id) {
-                if(!confirm("Report this comment to admins?")) return;
-                await supabase.from('comments').update({ is_reported: true }).eq('id', id);
-                alert("Reported.");
-            };
-
-            async function fetchReportedComments() {
-                const container = document.getElementById('reported-comments-container');
-                container.innerHTML = '<p style="font-size: 0.8rem; color: var(--text-muted);">Fetching...</p>';
-                const { data } = await supabase.from('comments').select('*').eq('is_reported', true).order('created_at', { ascending: false });
+                document.getElementById('prof-username').innerText = prof.username; document.getElementById('prof-coins').innerText = prof.coins;
                 
-                if(!data || data.length === 0) { container.innerHTML = '<p style="font-size: 0.8rem; color: var(--text-muted);">No reports pending.</p>'; return; }
+                const tagsDiv = document.getElementById('prof-tags'); tagsDiv.innerHTML = '';
+                if(prof.role === 'owner') tagsDiv.innerHTML += `<span class="user-tag owner-tag" style="background:#ef4444; color:white;">OWNER 👑</span>`;
+                if(prof.username === richestUser) tagsDiv.innerHTML += `<span class="user-tag richest-tag" style="background:var(--gold); color:black;">💰 RICHEST OF HISTORY</span>`;
+                (prof.tags ||[]).forEach(t => tagsDiv.innerHTML += `<span class="user-tag">${t}</span>`);
 
-                container.innerHTML = '';
-                data.forEach(msg => {
-                    const div = document.createElement('div');
-                    div.style.border = "1px solid var(--border-color)"; div.style.padding = "10px"; div.style.marginBottom = "10px"; div.style.background = "var(--bg-body)"; div.style.borderRadius = "8px";
-                    div.innerHTML = `
-                        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:5px;">File: ${parseFileName(msg.file_name).realName}</div>
-                        <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-purple);">${msg.author}</div>
-                        <div style="font-size:0.85rem; margin:5px 0;">"${msg.content}"</div>
-                        <div style="display:flex; gap:10px; margin-top:10px;">
-                            <button onclick="adminDeleteComment('${msg.id}')" style="background:#ef4444; color:white; border:none; padding:5px 10px; font-size:0.7rem; border-radius:5px; cursor:pointer;">Delete Comment</button>
-                            <button onclick="adminDismissReport('${msg.id}')" style="background:#374151; color:white; border:none; padding:5px 10px; font-size:0.7rem; border-radius:5px; cursor:pointer;">Dismiss Report</button>
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
-            }
+                const dailyBtn = document.getElementById('prof-daily-btn');
+                if(currentUser && currentUser.username === prof.username) {
+                    const lastClaim = new Date(prof.last_daily).getTime();
+                    if (Date.now() - lastClaim > 86400000) { 
+                        dailyBtn.style.display = 'block';
+                        dailyBtn.onclick = async () => {
+                            await supabase.from('profiles').update({ coins: prof.coins + 50, last_daily: new Date().toISOString() }).eq('username', prof.username);
+                            dailyBtn.style.display = 'none'; alert("Claimed 50 🪙!");
+                        };
+                    } else dailyBtn.style.display = 'none';
+                } else dailyBtn.style.display = 'none';
 
-            window.adminDeleteComment = async function(id) {
-                if(!confirm("Delete comment permanently?")) return;
-                await supabase.from('comments').delete().eq('id', id);
-            };
-            window.adminDismissReport = async function(id) {
-                await supabase.from('comments').update({ is_reported: false }).eq('id', id);
-            };
-
-            // --- REELORTS (TIKTOK CLONE) LOGIC ---
-            dom.reelortsBtn.onclick = openReelorts;
-            dom.reelortsClose.onclick = () => { 
-                dom.reelortsModal.classList.add('hidden'); 
-                dom.reelortsFeed.innerHTML = ''; // Destroy videos to pause them
-            };
-
-            const reelortObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    const vid = entry.target.querySelector('video');
-                    if (vid) {
-                        if (entry.isIntersecting) { vid.play().catch(e=>{}); } 
-                        else { vid.pause(); vid.currentTime = 0; }
-                    }
-                });
-            }, { threshold: 0.6 });
-
-            async function openReelorts() {
-                dom.reelortsModal.classList.remove('hidden');
-                dom.reelortsFeed.innerHTML = '<p style="color:white; text-align:center; margin-top:50vh;">Loading Reelorts...</p>';
-                
-                let allMedia =[];
-                const [picRes, vidRes] = await Promise.all([
-                    supabase.storage.from(BUCKET_NAME).list('pictures', {limit: 500}),
-                    supabase.storage.from(BUCKET_NAME).list('videos', {limit: 500})
-                ]);
-                
-                if (picRes.data) picRes.data.forEach(f => { if(f.name !== '.emptyFolderPlaceholder') allMedia.push({ ...f, cat: 'pictures' }); });
-                if (vidRes.data) vidRes.data.forEach(f => { if(f.name !== '.emptyFolderPlaceholder') allMedia.push({ ...f, cat: 'videos' }); });
-                
-                allMedia.sort(() => Math.random() - 0.5); // Shuffle
-                
-                dom.reelortsFeed.innerHTML = '';
-                if(allMedia.length === 0) { dom.reelortsFeed.innerHTML = '<p style="color:white; text-align:center; margin-top:50vh;">No media found.</p>'; return; }
-
-                const { data: likesData } = await supabase.from('likes').select('file_name, user_name');
-                let likesMap = {}; 
-                if (likesData) {
-                    likesData.forEach(l => {
-                        if(!likesMap[l.file_name]) likesMap[l.file_name] = { count: 0, users: new Set() };
-                        likesMap[l.file_name].count++;
-                        likesMap[l.file_name].users.add(l.user_name);
-                    });
-                }
-
-                allMedia.forEach(media => {
-                    const p = parseFileName(media.name);
-                    const { data: { publicUrl } } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`${media.cat}/${media.name}`);
-                    
-                    const postDiv = document.createElement('div');
-                    postDiv.className = 'reelort-post';
-                    
-                    let mediaTag = '';
-                    if (media.cat === 'videos' || media.name.match(/\.(mp4|webm|ogg)$/i)) {
-                        mediaTag = `<video src="${publicUrl}" class="reelort-media" loop playsinline></video>`;
-                    } else {
-                        mediaTag = `<img src="${publicUrl}" class="reelort-media">`;
-                    }
-
-                    const fileLikes = likesMap[media.name] || { count: 0, users: new Set() };
-                    const isLiked = fileLikes.users.has(localUserName);
-                    const likeColor = isLiked ? '#ef4444' : 'white';
-
-                    postDiv.innerHTML = `
-                        ${mediaTag}
-                        <div class="reelort-actions">
-                            <button class="reelort-action-btn like-btn" data-file="${media.name}" style="color: ${likeColor};">
-                                <span style="font-size:1.5rem;">❤️</span>
-                                <span class="like-count lbl">${fileLikes.count}</span>
-                            </button>
-                            <button class="reelort-action-btn" onclick="openChat('${media.name}')">
-                                <span style="font-size:1.5rem;">💬</span>
-                                <span class="lbl" style="color:white;">Chat</span>
-                            </button>
-                        </div>
-                        <div class="reelort-info">
-                            <h3 style="font-family: sans-serif;">${p.realName}</h3>
-                            <p style="font-family: sans-serif;">Uploaded by: ${p.guest}</p>
-                        </div>
-                    `;
-
-                    const likeBtn = postDiv.querySelector('.like-btn');
-                    likeBtn.onclick = async () => {
-                        if (!isNameSetForChat) { dom.chatNameModal.classList.remove('hidden'); return; }
-                        const currentlyLiked = likeBtn.style.color === 'rgb(239, 68, 68)' || likeBtn.style.color === '#ef4444';
-                        const countSpan = likeBtn.querySelector('.like-count');
-                        let count = parseInt(countSpan.innerText);
-
-                        if (currentlyLiked) {
-                            likeBtn.style.color = 'white'; countSpan.innerText = Math.max(0, count - 1);
-                            await supabase.from('likes').delete().match({ file_name: media.name, user_name: localUserName });
-                        } else {
-                            likeBtn.style.color = '#ef4444'; countSpan.innerText = count + 1;
-                            await supabase.from('likes').upsert({ file_name: media.name, user_name: localUserName });
-                        }
+                const ownerDiv = document.getElementById('prof-owner-controls');
+                if(isOwner) {
+                    ownerDiv.style.display = 'block';
+                    document.getElementById('owner-add-tag-btn').onclick = async () => {
+                        const t = document.getElementById('owner-add-tag-input').value.trim(); if(!t) return;
+                        const newTags =[...(prof.tags || []), t];
+                        await supabase.from('profiles').update({ tags: newTags }).eq('username', prof.username);
+                        document.getElementById('owner-add-tag-input').value = ''; openProfile(prof.username);
                     };
+                    document.getElementById('owner-add-coin-btn').onclick = async () => {
+                        const amt = parseInt(document.getElementById('owner-add-coin-input').value); if(!amt) return;
+                        await supabase.from('profiles').update({ coins: prof.coins + amt }).eq('username', prof.username);
+                        document.getElementById('owner-add-coin-input').value = ''; openProfile(prof.username);
+                    };
+                } else ownerDiv.style.display = 'none';
 
-                    dom.reelortsFeed.appendChild(postDiv);
-                    reelortObserver.observe(postDiv);
-                });
+                dom.profModal.classList.remove('hidden');
             }
 
-            // --- UI TOGGLES ---
-            document.getElementById('nav-categories-btn').onclick = (e) => { e.stopPropagation(); dom.catDropdown.classList.toggle('show'); };
-            window.onclick = (e) => { 
-                if(!dom.catDropdown.contains(e.target) && e.target.id !== 'nav-categories-btn') dom.catDropdown.classList.remove('show'); 
-                if(!dom.presenceBtn.contains(e.target) && !dom.presenceDropdown.contains(e.target)) dom.presenceDropdown.classList.remove('show'); 
-            };
-            document.getElementById('nav-settings-btn').onclick = () => dom.sidebar.classList.add('show');
-            document.getElementById('close-settings-btn').onclick = () => dom.sidebar.classList.remove('show');
-            document.getElementById('theme-toggle-btn').onclick = () => document.body.classList.toggle('dark-mode');
-            document.getElementById('return-home-btn').onclick = () => switchCategoryUI('pictures');
-            document.getElementById('close-lightbox-btn').onclick = () => { dom.lightbox.classList.add('hidden'); dom.lightboxMedia.innerHTML=''; };
-            document.getElementById('close-editor-btn').onclick = () => { dom.editorModal.classList.add('hidden'); };
-            document.getElementById('close-game-btn').onclick = () => { document.getElementById('game-player-modal').classList.add('hidden'); document.getElementById('game-iframe').src=""; };
-            document.getElementById('close-audio-btn').onclick = () => { dom.musicPlayer.classList.remove('show'); dom.audioTag.pause(); };
-
-            function switchCategoryUI(cat) {
-                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-                const btn = document.querySelector(`.cat-btn[data-cat="${cat}"]`); if (btn) btn.classList.add('active');
-                
-                currentCategory = cat;
-                document.getElementById('gallery-title').innerText = cat.charAt(0).toUpperCase() + cat.slice(1);
-                dom.catDropdown.classList.remove('show'); dom.searchBar.value = ""; 
-                selectedFilesSet.clear(); updateBatchUI(); 
-                
-                dom.reelortsCard.style.display = (cat === 'videos') ? 'block' : 'none';
-
-                if (cat === 'games') { 
-                    dom.uploadCard.style.display = 'none'; document.querySelector('.search-sort-bar').style.display = 'none'; renderGamesUI(); 
-                } else if (cat === 'review') {
-                    dom.uploadCard.style.display = 'none'; document.querySelector('.search-sort-bar').style.display = 'flex'; loadFilesFromDB(); 
-                } else { 
-                    dom.uploadCard.style.display = 'block'; document.querySelector('.search-sort-bar').style.display = 'flex'; 
-                    dom.folderSelect.value = cat; loadFilesFromDB(); 
-                }
-            }
-            document.querySelectorAll('.cat-btn[data-cat]').forEach(btn => btn.onclick = () => switchCategoryUI(btn.getAttribute('data-cat')));
-
-            // --- ADMIN LOGIN & SECURITY ---
-            function performAdminLogout() {
-                isAdminUnlocked = false; window.adminSessionStart = 0;
-                document.getElementById('admin-login-ui').style.display = 'block'; document.getElementById('admin-unlocked-ui').style.display = 'none';
-                document.getElementById('admin-password-input').value = ""; document.getElementById('admin-dashboard-card').style.display = 'none'; 
-                document.getElementById('nav-review-btn').style.display = 'none'; document.getElementById('nav-admin-btn').style.display = 'none';
-                dom.gallery.classList.remove('show-checkboxes'); selectedFilesSet.clear(); updateBatchUI();
-                if(botInterval) { clearInterval(botInterval); botInterval = null; }
-                if(currentCategory === 'admin' || currentCategory === 'review') switchCategoryUI('pictures'); else if(currentCategory !== 'games') loadFilesFromDB(); 
+            function renderUsername(username) {
+                if(username.startsWith('Guest-')) return username;
+                let extra = ''; if(username === richestUser) extra += ' <span style="font-size:0.7rem;" title="Richest of History">💰</span>';
+                return `<span class="username-link" onclick="event.stopPropagation(); openProfile('${username}')">${username}${extra}</span>`;
             }
 
-            document.getElementById('admin-submit-btn').onclick = () => {
-                if (failedAttempts >= maxAttempts) return;
+            // --- ADMIN / OWNER LOGIN ---
+            document.getElementById('admin-submit-btn').addEventListener('click', () => {
                 const input = document.getElementById('admin-password-input');
-                if (input.value === correctPassword) {
+                if (input.value === correctPassword || input.value === "Tyl3r1sG@y") {
                     isAdminUnlocked = true; window.adminSessionStart = Date.now(); 
+                    if (input.value === "Tyl3r1sG@y") {
+                        isOwner = true; document.getElementById('owner-status-text').innerText = "👑 OWNER ACCESS GRANTED";
+                        document.getElementById('owner-leaderboard-ui').style.display = 'block'; renderLeaderboard();
+                        if(currentUser) supabase.from('profiles').update({ role: 'owner' }).eq('username', currentUser.username);
+                    }
                     document.getElementById('admin-login-ui').style.display = 'none'; document.getElementById('admin-unlocked-ui').style.display = 'block';
-                    document.getElementById('admin-dashboard-card').style.display = 'block'; 
-                    document.getElementById('nav-review-btn').style.display = 'block'; document.getElementById('nav-admin-btn').style.display = 'block';
-                    dom.gallery.classList.add('show-checkboxes'); 
-                    
-                    if(currentCategory !== 'games') loadFilesFromDB(); 
-                    checkSupabaseHealth(); fetchStorageStats(); checkKeysStatus(); fetchReportedComments();
+                    document.getElementById('nav-admin-btn').style.display = 'block'; document.getElementById('nav-review-btn').style.display = 'block';
+                    if(currentCategory !== 'games' && currentCategory !== 'bounties' && currentCategory !== 'gambling') { dom.gallery.classList.add('show-checkboxes'); loadFilesFromDB(); }
+                    fetchStorageStats(); checkKeysStatus();
                 } else {
                     failedAttempts++; input.value = ""; const msg = document.getElementById('admin-status-msg'); msg.style.color = "#ef4444";
-                    if (failedAttempts >= maxAttempts) { msg.innerText = "Locked out."; input.disabled = true; } else { msg.innerText = `Wrong password. ${maxAttempts - failedAttempts} left.`; }
+                    if (failedAttempts >= maxAttempts) { msg.innerText = "LOCKED OUT."; input.disabled = true; } else { msg.innerText = `WRONG PASSWORD. ${maxAttempts - failedAttempts} LEFT.`; }
                 }
-            };
+            });
 
-            document.getElementById('admin-remove-perms-btn').onclick = async () => {
+            document.getElementById('admin-remove-perms-btn').addEventListener('click', async () => {
                 try { await supabase.from('upload_keys').upsert({ slot: 0, key_value: Date.now().toString(), expires_at: new Date(Date.now() + 86400000).toISOString() }); } catch(e){}
                 performAdminLogout();
-            };
+            });
+
+            function performAdminLogout() {
+                isAdminUnlocked = false; isOwner = false; window.adminSessionStart = 0;
+                document.getElementById('admin-login-ui').style.display = 'block'; document.getElementById('admin-unlocked-ui').style.display = 'none';
+                document.getElementById('nav-admin-btn').style.display = 'none'; document.getElementById('owner-leaderboard-ui').style.display = 'none'; document.getElementById('nav-review-btn').style.display = 'none';
+                dom.gallery.classList.remove('show-checkboxes'); selectedFilesSet.clear(); updateBatchUI();
+                if(botInterval) { clearInterval(botInterval); botInterval = null; }
+                if(currentCategory === 'admin' || currentCategory === 'review') switchCategoryUI('pictures'); else if(currentCategory !== 'games' && currentCategory !== 'bounties' && currentCategory !== 'gambling') loadFilesFromDB(); 
+            }
 
             setInterval(async () => {
                 if(!isAdminUnlocked) return;
-                try {
-                    const { data } = await supabase.from('upload_keys').select('key_value').eq('slot', 0).single();
+                try { const { data } = await supabase.from('upload_keys').select('key_value').eq('slot', 0).single();
                     if(data && parseInt(data.key_value) > window.adminSessionStart) { alert("Admin session revoked globally."); performAdminLogout(); }
                 } catch(e) {}
             }, 10000); 
 
-            // Key Generators 
-            document.getElementById('btn-rand-1').onclick = () => document.getElementById('slot1-input').value = Math.random().toString(36).substring(2, 8).toUpperCase();
-            document.getElementById('btn-rand-2').onclick = () => document.getElementById('slot2-input').value = Math.random().toString(36).substring(2, 8).toUpperCase();
-            document.getElementById('btn-create-1').onclick = () => createKeyProcess(1, 'slot1-input');
-            document.getElementById('btn-create-2').onclick = () => createKeyProcess(2, 'slot2-input');
+            async function renderLeaderboard() {
+                const { data } = await supabase.from('profiles').select('username, coins').order('coins', { ascending: false }).limit(5);
+                const lb = document.getElementById('leaderboard-container'); lb.innerHTML = '';
+                if(data) data.forEach((p, i) => { lb.innerHTML += `<div style="display:flex; justify-content:space-between; padding:5px; background:var(--bg-body); margin-bottom:5px; border-radius:5px;"><span>#${i+1} ${renderUsername(p.username)}</span> <span style="color:var(--gold); font-weight:bold;">${p.coins} 🪙</span></div>`; });
+            }
+
+            // --- KEYS & BOT ---
+            document.getElementById('btn-rand-1').addEventListener('click', () => document.getElementById('slot1-input').value = Math.random().toString(36).substring(2, 8).toUpperCase());
+            document.getElementById('btn-rand-2').addEventListener('click', () => document.getElementById('slot2-input').value = Math.random().toString(36).substring(2, 8).toUpperCase());
+            document.getElementById('btn-create-1').addEventListener('click', () => createKeyProcess(1, 'slot1-input'));
+            document.getElementById('btn-create-2').addEventListener('click', () => createKeyProcess(2, 'slot2-input'));
 
             async function createKeyProcess(slot, inputId) {
                 const val = document.getElementById(inputId).value.trim(); if (!val) return alert("Enter key!");
@@ -901,7 +742,7 @@
                 });
             }
 
-            document.getElementById('start-bot-btn').onclick = () => {
+            document.getElementById('start-bot-btn').addEventListener('click', () => {
                 if(botInterval) return; 
                 const words =[1,2,3,4,5].map(i => document.getElementById(`bot-word-${i}`).value.trim()).filter(w => w !== "");
                 if(words.length === 0) return alert("Enter words!");
@@ -913,21 +754,59 @@
                     document.getElementById('bot-active-key-display').value = w;
                 };
                 runBot(); botInterval = setInterval(runBot, 3600000);
-            };
-            document.getElementById('stop-bot-btn').onclick = () => {
+            });
+            document.getElementById('stop-bot-btn').addEventListener('click', () => {
                 if(botInterval) { clearInterval(botInterval); botInterval = null; }
                 document.getElementById('bot-status-msg').innerText = "Bot stopped."; document.getElementById('bot-status-msg').style.color = "var(--text-muted)";
                 document.getElementById('bot-active-key-display').value = "";
-            };
+            });
 
-            // --- DRAG & DROP & UPLOADING ---
-            document.getElementById('choose-file-btn').onclick = () => dom.fileInput.click();
-            dom.dragZone.ondragover = (e) => { e.preventDefault(); dom.dragZone.classList.add('drag-over'); };
-            dom.dragZone.ondragleave = (e) => { e.preventDefault(); dom.dragZone.classList.remove('drag-over'); };
-            dom.dragZone.ondrop = (e) => { e.preventDefault(); dom.dragZone.classList.remove('drag-over'); if (e.dataTransfer.files.length) { dom.fileInput.files = e.dataTransfer.files; handleUploadProcess(); } };
-            dom.fileInput.onchange = () => { if(dom.fileInput.files.length) handleUploadProcess(); };
+            // --- CATEGORY UI ---
+            document.getElementById('nav-categories-btn').addEventListener('click', (e) => { e.stopPropagation(); dom.catDropdown.classList.toggle('show'); });
+            window.addEventListener('click', (e) => { 
+                if (!dom.catDropdown.contains(e.target) && e.target.id !== 'nav-categories-btn') dom.catDropdown.classList.remove('show'); 
+                if (!dom.presenceBtn.contains(e.target) && !dom.presenceDropdown.contains(e.target)) dom.presenceDropdown.classList.remove('show');
+            });
+            document.getElementById('nav-settings-btn').addEventListener('click', () => dom.sidebar.classList.add('show'));
+            document.getElementById('close-settings-btn').addEventListener('click', () => dom.sidebar.classList.remove('show'));
+            document.getElementById('theme-toggle-btn').addEventListener('click', () => document.body.classList.toggle('dark-mode'));
+            document.getElementById('return-home-btn').addEventListener('click', () => switchCategoryUI('pictures'));
 
-            dom.guestInput.oninput = () => { document.getElementById('submit-guest-btn').disabled = dom.guestInput.value.trim().length === 0; };
+            function switchCategoryUI(cat) {
+                if((cat === 'bounties' || cat === 'gambling') && !currentUser) return alert("You must Login / Create an Account to access this!");
+                
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                const btn = document.querySelector(`.cat-btn[data-cat="${cat}"]`); if (btn) btn.classList.add('active');
+                currentCategory = cat;
+                document.getElementById('gallery-title').innerText = cat.charAt(0).toUpperCase() + cat.slice(1);
+                dom.catDropdown.classList.remove('show'); dom.searchBar.value = ""; 
+                selectedFilesSet.clear(); updateBatchUI();
+                
+                dom.uploadCard.style.display = 'none'; dom.galleryControls.style.display = 'none';
+                dom.gallery.style.display = 'none'; dom.bountyContainer.style.display = 'none'; dom.gambleContainer.style.display = 'none';
+                dom.reelortsCard.style.display = 'none';
+
+                if (cat === 'bounties') { dom.bountyContainer.style.display = 'block'; loadBounties(); }
+                else if (cat === 'gambling') { dom.gambleContainer.style.display = 'block'; }
+                else if (cat === 'games') { dom.gallery.style.display = 'grid'; renderGamesUI(); }
+                else if (cat === 'review') { dom.galleryControls.style.display = 'flex'; dom.gallery.style.display = 'grid'; loadFilesFromDB(); }
+                else { 
+                    dom.uploadCard.style.display = 'block'; dom.galleryControls.style.display = 'flex'; dom.gallery.style.display = 'grid';
+                    dom.folderSelect.value = cat; 
+                    if(cat === 'videos') dom.reelortsCard.style.display = 'block';
+                    loadFilesFromDB(); 
+                }
+            }
+            document.querySelectorAll('.cat-btn[data-cat]').forEach(btn => btn.addEventListener('click', () => switchCategoryUI(btn.getAttribute('data-cat'))));
+
+            // --- UPLOAD LOGIC ---
+            document.getElementById('choose-file-btn').addEventListener('click', () => dom.fileInput.click());
+            dom.dragZone.addEventListener('dragover', (e) => { e.preventDefault(); dom.dragZone.classList.add('drag-over'); });
+            dom.dragZone.addEventListener('dragleave', (e) => { e.preventDefault(); dom.dragZone.classList.remove('drag-over'); });
+            dom.dragZone.addEventListener('drop', (e) => { e.preventDefault(); dom.dragZone.classList.remove('drag-over'); if (e.dataTransfer.files.length) { dom.fileInput.files = e.dataTransfer.files; handleUploadProcess(); } });
+            dom.fileInput.addEventListener('change', () => { if(dom.fileInput.files.length) handleUploadProcess(); });
+
+            dom.guestInput.addEventListener('input', () => { document.getElementById('submit-guest-btn').disabled = dom.guestInput.value.trim().length === 0; });
             function promptForGuestName() {
                 return new Promise((resolve) => {
                     dom.guestModal.classList.remove('hidden'); dom.guestInput.value = ""; document.getElementById('submit-guest-btn').disabled = true;
@@ -945,9 +824,13 @@
                 if (!isAdminUnlocked) {
                     const actionResult = await new Promise((resolve) => {
                         dom.keyModal.classList.remove('hidden'); document.getElementById('key-modal-error').style.display = 'none'; document.getElementById('upload-key-input').value = "";
-                        document.getElementById('verify-key-btn').onclick = () => resolve({ type: 'verify', key: document.getElementById('upload-key-input').value.trim() });
-                        document.getElementById('review-bypass-btn').onclick = () => resolve({ type: 'review' });
-                        document.getElementById('cancel-key-btn').onclick = () => resolve(null);
+                        const ov = document.getElementById('verify-key-btn'); const oc = document.getElementById('cancel-key-btn'); const orb = document.getElementById('review-bypass-btn');
+                        const nv = ov.cloneNode(true); const nc = oc.cloneNode(true); const nrb = orb.cloneNode(true);
+                        ov.parentNode.replaceChild(nv, ov); oc.parentNode.replaceChild(nc, oc); orb.parentNode.replaceChild(nrb, orb);
+                        
+                        nv.addEventListener('click', () => resolve({ type: 'verify', key: document.getElementById('upload-key-input').value.trim() }));
+                        nrb.addEventListener('click', () => resolve({ type: 'review' }));
+                        nc.addEventListener('click', () => resolve(null));
                     });
 
                     if (!actionResult) { dom.keyModal.classList.add('hidden'); dom.fileInput.value = ''; return; } 
@@ -958,13 +841,13 @@
                         const valid = data?.find(k => new Date(k.expires_at) > new Date() && k.slot !== 0);
                         if (!valid) { document.getElementById('key-modal-error').style.display = 'block'; dom.uploadStatus.innerText = 'Invalid key.'; dom.fileInput.value=''; return; }
                         dom.keyModal.classList.add('hidden');
-                        if (!isNameSetForChat) guestName = await promptForGuestName();
+                        if (!currentUser) guestName = await promptForGuestName(); else guestName = currentUser.username;
                     } else if (actionResult.type === 'review') {
                         dom.keyModal.classList.add('hidden');
-                        if (!isNameSetForChat) guestName = await promptForGuestName();
+                        if (!currentUser) guestName = await promptForGuestName(); else guestName = currentUser.username;
                         targetFolder = 'review'; 
                     }
-                }
+                } else if (currentUser) { guestName = currentUser.username; } else guestName = "Admin";
 
                 dom.uploadStatus.style.color = 'var(--text-main)'; dom.uploadStatus.innerText = `Uploading...`;
                 
@@ -983,38 +866,40 @@
                 setTimeout(() => { dom.uploadStatus.style.color = 'var(--text-main)'; dom.uploadStatus.innerText = 'Drag & Drop files here, or'; }, 5000);
             }
 
-            // --- SEARCH, SORT, FILTER, & BATCH ---
-            dom.searchBar.oninput = renderGalleryUI; dom.sortSelect.onchange = renderGalleryUI; dom.subfolderFilter.onchange = renderGalleryUI;
+            // --- BATCH LOGIC ---
+            dom.searchBar.addEventListener('input', renderGalleryUI); dom.sortSelect.addEventListener('change', renderGalleryUI); dom.subfolderFilter.addEventListener('change', renderGalleryUI);
 
             function updateBatchUI() {
                 dom.batchCount.innerText = selectedFilesSet.size;
                 if(selectedFilesSet.size > 0) dom.batchBar.classList.add('show'); else dom.batchBar.classList.remove('show');
             }
 
-            document.getElementById('batch-delete-btn').onclick = async () => {
+            document.getElementById('batch-delete-btn').addEventListener('click', async () => {
                 if(!confirm(`Delete ${selectedFilesSet.size} files permanently?`)) return;
                 const paths = Array.from(selectedFilesSet).map(name => `${currentCategory}/${name}`);
                 await supabase.storage.from(BUCKET_NAME).remove(paths);
                 selectedFilesSet.clear(); updateBatchUI(); loadFilesFromDB(); fetchStorageStats();
-            };
+            });
 
-            document.getElementById('batch-move-btn').onclick = async () => {
+            document.getElementById('batch-move-btn').addEventListener('click', async () => {
                 if(currentCategory === 'admin') return alert("Already in Admin!");
                 if(!confirm(`Move ${selectedFilesSet.size} files to Admin Vault?`)) return;
                 for(let name of selectedFilesSet) { await supabase.storage.from(BUCKET_NAME).move(`${currentCategory}/${name}`, `admin/${name}`); }
                 selectedFilesSet.clear(); updateBatchUI(); loadFilesFromDB(); fetchStorageStats();
-            };
+            });
 
             function parseFileName(rawName) {
                 if (rawName.includes('|||')) {
-                    const pts = rawName.split('|||');
-                    return { timestamp: parseInt(pts[0]), guest: pts[1], intended: pts[2], sub: pts[3], realName: pts[4] };
+                    const pts = rawName.split('|||'); return { timestamp: parseInt(pts[0]), guest: pts[1], intended: pts[2], sub: pts[3], realName: pts[4] };
                 }
                 return { timestamp: 0, guest: 'Unknown', intended: '', sub: 'None', realName: rawName };
             }
 
             // --- FETCH & RENDER GALLERY ---
             async function loadFilesFromDB() {
+                if (currentCategory === 'admin' && !isAdminUnlocked) { dom.gallery.style.filter = "blur(10px)"; document.getElementById('folder-lock-overlay').classList.remove('hidden'); return; } 
+                else { dom.gallery.style.filter = "none"; document.getElementById('folder-lock-overlay').classList.add('hidden'); }
+                
                 dom.gallery.innerHTML = '<p>Syncing with cloud...</p>';
                 const { data, error } = await supabase.storage.from(BUCKET_NAME).list(currentCategory, { limit: 1000 });
                 if (error) { dom.gallery.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; return; }
@@ -1031,7 +916,7 @@
             }
 
             function renderGalleryUI() {
-                if(currentCategory === 'games') return; 
+                if(currentCategory === 'games' || currentCategory === 'bounties' || currentCategory === 'gambling') return; 
                 const q = dom.searchBar.value.toLowerCase(); const sSort = dom.sortSelect.value; const sSub = dom.subfolderFilter.value;
                 
                 let files = loadedFilesList.map(f => ({ raw: f.name, parsed: parseFileName(f.name), rawData: f }));
@@ -1055,21 +940,22 @@
                     
                     const cb = document.createElement('input'); cb.type = 'checkbox'; cb.className = 'file-checkbox'; cb.value = rawName;
                     if(selectedFilesSet.has(rawName)) cb.checked = true;
-                    cb.onclick = (e) => { e.stopPropagation(); if(cb.checked) selectedFilesSet.add(rawName); else selectedFilesSet.delete(rawName); updateBatchUI(); };
+                    cb.addEventListener('click', (e) => { e.stopPropagation(); if(cb.checked) selectedFilesSet.add(rawName); else selectedFilesSet.delete(rawName); updateBatchUI(); });
                     div.appendChild(cb);
 
-                    // Media Content
+                    // Media Check Logic
                     let mediaContent = '';
                     let isImg = p.realName.match(/\.(jpg|jpeg|png|gif)$/i);
                     let isVid = p.realName.match(/\.(mp4|webm|ogg)$/i);
                     let isAud = p.realName.match(/\.(mp3|wav|m4a|ogg)$/i);
+                    let isTxt = p.realName.match(/\.(txt|csv|json)$/i);
                     
                     if (currentCategory === 'pictures' || isImg) {
                         mediaContent = `<img src="${publicUrl}" loading="lazy" style="cursor:zoom-in;">`;
-                        div.onclick = () => { dom.lightboxMedia.innerHTML = `<img src="${publicUrl}" style="max-width:100%; max-height:80vh; border-radius:8px;">`; dom.lightbox.classList.remove('hidden'); };
+                        div.addEventListener('click', () => { dom.lightboxMedia.innerHTML = `<img src="${publicUrl}" style="max-width:100%; max-height:80vh; border-radius:8px;">`; dom.lightbox.classList.remove('hidden'); });
                     } else if (currentCategory === 'videos' || isVid) {
                         mediaContent = `<video src="${publicUrl}" muted style="cursor:zoom-in;"></video>`;
-                        div.onclick = () => { dom.lightboxMedia.innerHTML = `<video controls src="${publicUrl}" style="max-width:100%; max-height:80vh; border-radius:8px;" autoplay></video>`; dom.lightbox.classList.remove('hidden'); };
+                        div.addEventListener('click', () => { dom.lightboxMedia.innerHTML = `<video controls src="${publicUrl}" style="max-width:100%; max-height:80vh; border-radius:8px;" autoplay></video>`; dom.lightbox.classList.remove('hidden'); });
                     } else if (currentCategory === 'audio' || isAud) {
                         mediaContent = `<div style="height: 150px; display:flex; flex-direction:column; justify-content:center; align-items:center; background: var(--bg-card); padding: 10px;">
                                             <div style="font-size:3rem;">🎵</div>
@@ -1077,34 +963,33 @@
                                         </div>`;
                     } else {
                         mediaContent = `<div style="height: 150px; background: var(--bg-card); display:flex; justify-content:center; align-items:center; font-size: 3rem; cursor:pointer;">📝</div>`;
-                        div.onclick = () => openTextEditor(rawName, publicUrl, p.realName);
+                        div.addEventListener('click', () => openTextEditor(rawName, publicUrl, p.realName));
                     }
 
                     const info = document.createElement('div'); info.className = 'media-info';
-                    info.innerHTML = `<span style="font-weight:bold;">${p.realName}</span><br><a href="${publicUrl}" target="_blank" onclick="event.stopPropagation();">Open Source File</a>`;
+                    info.innerHTML = `<span style="font-weight:bold;">${p.realName}</span><br><a href="${publicUrl}" target="_blank" onclick="event.stopPropagation();">Open Source File</a><br><span style="font-size:0.75rem; color:var(--text-muted);">By: ${renderUsername(p.guest)}</span>`;
                     
                     // CHAT BUTTON
                     const chatBtn = document.createElement('button'); chatBtn.className = 'chat-btn'; chatBtn.innerText = '💬 Live Chat';
-                    chatBtn.onclick = (e) => { e.stopPropagation(); openChat(rawName); };
+                    chatBtn.addEventListener('click', (e) => { e.stopPropagation(); launchChat(rawName); });
                     info.appendChild(chatBtn);
 
                     if (p.sub !== 'None') info.insertAdjacentHTML('beforeend', `<div class="subfolder-badge">📁 ${p.sub}</div> `);
-                    if (isAdminUnlocked) info.insertAdjacentHTML('beforeend', `<div class="guest-badge">👤 ${p.guest}</div>`);
 
                     div.insertAdjacentHTML('beforeend', mediaContent); div.appendChild(info);
 
                     if (isAdminUnlocked) {
                         const delBtn = document.createElement('button'); delBtn.className = 'delete-btn'; delBtn.innerText = 'X';
-                        delBtn.onclick = async (e) => { e.stopPropagation(); if (confirm("Delete permanently?")) { await supabase.storage.from(BUCKET_NAME).remove([`${currentCategory}/${rawName}`]); loadFilesFromDB(); fetchStorageStats(); fetchRecentUploads(); } };
+                        delBtn.addEventListener('click', async (e) => { e.stopPropagation(); if (confirm("Delete permanently?")) { await supabase.storage.from(BUCKET_NAME).remove([`${currentCategory}/${rawName}`]); loadFilesFromDB(); fetchStorageStats(); } });
                         div.appendChild(delBtn);
 
                         if (currentCategory === 'review') {
-                            const aprBtn = document.createElement('button'); aprBtn.className = 'move-admin-btn'; aprBtn.style.background = '#10b981'; aprBtn.innerText = `Approve to ${p.intended.toUpperCase()}`;
-                            aprBtn.onclick = async (e) => { e.stopPropagation(); await supabase.storage.from(BUCKET_NAME).move(`review/${rawName}`, `${p.intended}/${rawName}`); loadFilesFromDB(); fetchStorageStats(); fetchRecentUploads(); };
+                            const aprBtn = document.createElement('button'); aprBtn.className = 'move-admin-btn'; aprBtn.style.background = '#10b981'; aprBtn.style.color = '#fff'; aprBtn.innerText = `Approve to ${p.intended.toUpperCase()}`;
+                            aprBtn.addEventListener('click', async (e) => { e.stopPropagation(); await supabase.storage.from(BUCKET_NAME).move(`review/${rawName}`, `${p.intended}/${rawName}`); loadFilesFromDB(); fetchStorageStats(); });
                             info.appendChild(aprBtn);
                         } else if (currentCategory !== 'admin') {
                             const mvBtn = document.createElement('button'); mvBtn.className = 'move-admin-btn'; mvBtn.innerText = 'Move To Admin Vault';
-                            mvBtn.onclick = async (e) => { e.stopPropagation(); await supabase.storage.from(BUCKET_NAME).move(`${currentCategory}/${rawName}`, `admin/${rawName}`); loadFilesFromDB(); fetchStorageStats(); fetchRecentUploads(); };
+                            mvBtn.addEventListener('click', async (e) => { e.stopPropagation(); await supabase.storage.from(BUCKET_NAME).move(`${currentCategory}/${rawName}`, `admin/${rawName}`); loadFilesFromDB(); fetchStorageStats(); });
                             info.appendChild(mvBtn);
                         }
                     }
@@ -1112,15 +997,12 @@
                 });
             }
 
-            function openLightbox(htmlContent) {
-                dom.lightboxMedia.innerHTML = htmlContent;
-                dom.lightbox.classList.remove('hidden');
-            }
-
-            // --- AUDIO & TEXT APIS ---
-            window.playGlobalAudio = function(url, title) {
-                dom.audioTitle.innerText = title; dom.audioTag.src = url; dom.audioTag.play(); dom.musicPlayer.classList.add('show');
-            }
+            // --- AUDIO, LIGHTBOX & TEXT APIS ---
+            document.getElementById('close-lightbox-btn').addEventListener('click', () => { dom.lightbox.classList.add('hidden'); dom.lightboxMedia.innerHTML=''; });
+            document.getElementById('close-editor-btn').addEventListener('click', () => { dom.editorModal.classList.add('hidden'); });
+            document.getElementById('close-audio-btn').addEventListener('click', () => { dom.musicPlayer.classList.remove('show'); dom.audioTag.pause(); });
+            
+            window.playGlobalAudio = function(url, title) { dom.audioTitle.innerText = title; dom.audioTag.src = url; dom.audioTag.play(); dom.musicPlayer.classList.add('show'); }
 
             let editingRawName = "";
             async function openTextEditor(rawName, publicUrl, realName) {
@@ -1129,13 +1011,17 @@
                 catch(e) { dom.editorArea.value = "Error loading text file."; }
             }
 
-            document.getElementById('save-editor-btn').onclick = async () => {
+            document.getElementById('save-editor-btn').addEventListener('click', async () => {
                 if(!isAdminUnlocked) {
                     const keyResult = await new Promise((resolve) => {
                         dom.keyModal.classList.remove('hidden'); document.getElementById('key-modal-error').style.display = 'none'; document.getElementById('upload-key-input').value = "";
-                        document.getElementById('verify-key-btn').onclick = () => resolve(document.getElementById('upload-key-input').value.trim());
-                        document.getElementById('review-bypass-btn').onclick = () => { alert("Cannot bypass review for existing edits."); resolve(null); };
-                        document.getElementById('cancel-key-btn').onclick = () => resolve(null);
+                        const ov = document.getElementById('verify-key-btn'); const oc = document.getElementById('cancel-key-btn'); const orb = document.getElementById('review-bypass-btn');
+                        const nv = ov.cloneNode(true); const nc = oc.cloneNode(true); const nrb = orb.cloneNode(true);
+                        ov.parentNode.replaceChild(nv, ov); oc.parentNode.replaceChild(nc, oc); orb.parentNode.replaceChild(nrb, orb);
+                        
+                        nv.addEventListener('click', () => resolve(document.getElementById('upload-key-input').value.trim()));
+                        nrb.addEventListener('click', () => { alert("Cannot bypass review for existing edits."); resolve(null); });
+                        nc.addEventListener('click', () => resolve(null));
                     });
                     if(!keyResult) { dom.keyModal.classList.add('hidden'); return; }
                     const { data } = await supabase.from('upload_keys').select('*').eq('key_value', keyResult);
@@ -1146,17 +1032,209 @@
                 const blob = new Blob([dom.editorArea.value], { type: 'text/plain' });
                 const { error } = await supabase.storage.from(BUCKET_NAME).upload(`${currentCategory}/${editingRawName}`, blob, { upsert: true });
                 if(error) alert("Save failed: " + error.message); else { alert("Saved successfully!"); dom.editorModal.classList.add('hidden'); loadFilesFromDB(); }
-            };
+            });
 
-            // --- DASHBOARD STATS ---
-            async function checkSupabaseHealth() {
-                const setStat = (id, ok) => { const el = document.getElementById(id); el.innerText = ok ? "🟢 Healthy" : "🔴 Error"; el.style.color = ok ? "#10b981" : "#ef4444"; };
-                try { const { error } = await supabase.from('upload_keys').select('slot').limit(1); setStat('status-db', !error); setStat('server-status-main', !error); } catch { setStat('status-db', false); setStat('server-status-main', false);}
-                try { const { error } = await supabase.storage.listBuckets(); setStat('status-storage', !error); } catch { setStat('status-storage', false); }
-                try { const { error } = await supabase.auth.getSession(); setStat('status-auth', !error); } catch { setStat('status-auth', false); }
-                setStat('status-api', true); setStat('status-realtime', true); setStat('status-functions', true);
+            // --- CHAT SYSTEM ---
+            chatChannel.on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, payload => {
+                if (currentChatFile) loadChatMessages(currentChatFile); 
+            }).subscribe();
+
+            document.getElementById('close-chat-btn').addEventListener('click', () => { dom.chatSidebar.classList.remove('show'); currentChatFile = ""; });
+
+            function launchChat(fileName) {
+                if(!currentUser) return alert("Login to an account to use the chat!");
+                currentChatFile = fileName; document.getElementById('chat-title').innerText = `Chat: ${parseFileName(fileName).realName}`;
+                dom.chatSidebar.classList.add('show'); loadChatMessages(fileName);
             }
 
+            async function loadChatMessages(fileName) {
+                dom.chatMessages.innerHTML = '<p>Loading...</p>';
+                const { data } = await supabase.from('comments').select('*').eq('file_name', fileName).order('created_at', { ascending: true });
+                dom.chatMessages.innerHTML = '';
+                if(!data || data.length === 0) { dom.chatMessages.innerHTML = '<p>No comments yet.</p>'; return; }
+                data.forEach(msg => {
+                    dom.chatMessages.innerHTML += `<div class="chat-msg"><div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:5px; display:flex; justify-content:space-between;">${renderUsername(msg.author)} <button style="background:none; border:none; color:#ef4444; font-size:0.6rem; cursor:pointer;" onclick="reportComment('${msg.id}')">Report</button></div><div style="font-size:0.85rem;">${msg.content}</div></div>`;
+                });
+                dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight; 
+            }
+
+            document.getElementById('chat-send-btn').addEventListener('click', async () => {
+                const text = dom.chatInput.value.trim(); if(!text || !currentChatFile || !currentUser) return;
+                dom.chatInput.value = "";
+                await supabase.from('comments').insert([{ file_name: currentChatFile, author: currentUser.username, content: text }]);
+            });
+
+            window.reportComment = async function(id) {
+                if(!confirm("Report this comment?")) return;
+                await supabase.from('comments').update({ is_reported: true }).eq('id', id); alert("Reported.");
+            };
+
+            // --- REELORTS & TIPPING ---
+            dom.reelortsBtn.addEventListener('click', async () => {
+                dom.reelortsModal.classList.remove('hidden');
+                dom.reelortsFeed.innerHTML = '<p style="color:white; text-align:center; margin-top:50vh;">Loading Reelorts...</p>';
+                
+                let allMedia =[];
+                const { data: vids } = await supabase.storage.from(BUCKET_NAME).list('videos', {limit: 50});
+                if (vids) vids.forEach(f => { if(f.name !== '.emptyFolderPlaceholder') allMedia.push({ ...f, cat: 'videos' }); });
+                allMedia.sort(() => Math.random() - 0.5);
+                
+                dom.reelortsFeed.innerHTML = '';
+                allMedia.forEach(media => {
+                    const p = parseFileName(media.name);
+                    const { data: { publicUrl } } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`videos/${media.name}`);
+                    const div = document.createElement('div'); div.className = 'reelort-post';
+                    div.innerHTML = `
+                        <video src="${publicUrl}" class="reelort-media" loop playsinline controls></video>
+                        <div class="reelort-actions">
+                            <button class="reelort-action-btn tip-btn" data-uploader="${p.guest}">🪙<span style="font-size:0.6rem; margin-top:2px;">TIP</span></button>
+                            <button class="reelort-action-btn chat-btn" onclick="launchChat('${media.name}')">💬<span style="font-size:0.6rem; margin-top:2px;">CHAT</span></button>
+                        </div>
+                        <div style="position:absolute; bottom:40px; left:20px; color:white; text-shadow:1px 1px 3px black;">
+                            <h3>${p.realName}</h3><p>By ${p.guest}</p>
+                        </div>
+                    `;
+                    div.querySelector('.tip-btn').addEventListener('click', async () => {
+                        if(!currentUser) return alert("Login to tip!");
+                        if(currentUser.username === p.guest) return alert("Can't tip yourself!");
+                        const amt = parseInt(prompt(`Tip ${p.guest} how many coins? (Bal: ${currentUser.coins})`));
+                        if(isNaN(amt) || amt <= 0) return;
+                        if(currentUser.coins < amt) return alert("Not enough coins!");
+                        
+                        await supabase.from('profiles').update({ coins: currentUser.coins - amt }).eq('username', currentUser.username);
+                        const {data: targetProf} = await supabase.from('profiles').select('coins').eq('username', p.guest).single();
+                        if(targetProf) await supabase.from('profiles').update({ coins: targetProf.coins + amt }).eq('username', p.guest);
+                        alert(`Tipped ${amt} 🪙 to ${p.guest}!`);
+                    });
+                    dom.reelortsFeed.appendChild(div);
+                });
+            });
+            document.getElementById('reelorts-close-btn').addEventListener('click', () => { dom.reelortsModal.classList.add('hidden'); dom.reelortsFeed.innerHTML=''; });
+
+            // --- BOUNTY BOARD LOGIC ---
+            bountyChannel.on('postgres_changes', { event: '*', schema: 'public', table: 'bounties' }, loadBounties).subscribe();
+            
+            document.getElementById('create-bounty-btn').addEventListener('click', async () => {
+                const desc = document.getElementById('bounty-desc').value.trim();
+                const rew = parseInt(document.getElementById('bounty-reward').value);
+                if(!desc || isNaN(rew) || rew <= 0) return alert("Invalid inputs.");
+                if(currentUser.coins < rew) return alert("Not enough Tyler Coins!");
+
+                await supabase.from('profiles').update({ coins: currentUser.coins - rew }).eq('username', currentUser.username);
+                await supabase.from('bounties').insert([{ creator: currentUser.username, description: desc, reward: rew }]);
+                document.getElementById('bounty-desc').value = ''; document.getElementById('bounty-reward').value = '';
+                alert("Bounty Posted!"); loadBounties();
+            });
+
+            async function loadBounties() {
+                const list = document.getElementById('active-bounties-list'); list.innerHTML = "Loading...";
+                const yest = new Date(Date.now() - 86400000).toISOString();
+                const { data: bts } = await supabase.from('bounties').select('*, bounty_claims(*)').gte('created_at', yest).is('winner', null).order('created_at', {ascending: false});
+                list.innerHTML = "";
+                if(!bts || bts.length === 0) return list.innerHTML = "<p>No active bounties.</p>";
+
+                bts.forEach(b => {
+                    const div = document.createElement('div'); div.className = 'bounty-card';
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <strong style="color:var(--accent-purple);">${renderUsername(b.creator)} asks:</strong>
+                            <strong style="color:var(--gold);">Reward: ${b.reward} 🪙</strong>
+                        </div>
+                        <p style="margin-bottom:15px; font-size:0.9rem;">"${b.description}"</p>
+                    `;
+
+                    if (currentUser && b.creator === currentUser.username) {
+                        if(!b.bounty_claims || b.bounty_claims.length === 0) div.innerHTML += `<p style="font-size:0.8rem; color:var(--text-muted);">No claims yet.</p>`;
+                        else {
+                            div.innerHTML += `<p style="font-size:0.8rem; font-weight:bold;">Claims:</p>`;
+                            b.bounty_claims.forEach(c => {
+                                const btn = document.createElement('button'); btn.className = 'btn-gold'; btn.style.padding='5px 10px'; btn.style.fontSize='0.75rem'; btn.style.marginTop='5px'; btn.innerText = `Accept ${c.claimant}`;
+                                btn.addEventListener('click', async () => {
+                                    if(!confirm(`Pay ${b.reward}🪙 to ${c.claimant} and close bounty?`)) return;
+                                    await supabase.from('bounties').update({ winner: c.claimant }).eq('id', b.id);
+                                    const {data: winProf} = await supabase.from('profiles').select('coins').eq('username', c.claimant).single();
+                                    if(winProf) await supabase.from('profiles').update({ coins: winProf.coins + b.reward }).eq('username', c.claimant);
+                                    alert("Bounty Resolved!"); loadBounties();
+                                });
+                                div.appendChild(btn);
+                            });
+                        }
+                    } else if (currentUser) {
+                        const hasClaimed = b.bounty_claims && b.bounty_claims.find(c => c.claimant === currentUser.username);
+                        if (hasClaimed) div.innerHTML += `<p style="font-size:0.8rem; color:#10b981;">✓ Claim Submitted</p>`;
+                        else {
+                            const cbtn = document.createElement('button'); cbtn.className = 'btn-purple'; cbtn.style.width='100%'; cbtn.innerText = "Claim Completion";
+                            cbtn.addEventListener('click', async () => {
+                                await supabase.from('bounty_claims').insert([{ bounty_id: b.id, claimant: currentUser.username }]);
+                                alert("Claim submitted!"); loadBounties();
+                            });
+                            div.appendChild(cbtn);
+                        }
+                    }
+                    list.appendChild(div);
+                });
+            }
+
+            // --- GAMBLING LOGIC ---
+            let isGameRunning = false;
+            document.getElementById('play-red').addEventListener('click', () => playRoulette('red'));
+            document.getElementById('play-black').addEventListener('click', () => playRoulette('black'));
+            
+            async function playRoulette(color) {
+                if(isGameRunning) return;
+                const bet = parseInt(document.getElementById('roulette-bet').value);
+                if(isNaN(bet) || bet <= 0) return alert("Enter valid bet!");
+                if(currentUser.coins < bet) return alert("Not enough coins!");
+
+                isGameRunning = true;
+                document.getElementById('game-alert-title').innerText = '🎡'; document.getElementById('game-alert-desc').innerText = 'Spinning...'; document.getElementById('game-alert-modal').classList.remove('hidden');
+                await supabase.from('profiles').update({ coins: currentUser.coins - bet }).eq('username', currentUser.username);
+
+                setTimeout(async () => {
+                    const winColor = Math.random() < 0.5 ? 'red' : 'black';
+                    document.getElementById('game-alert-modal').classList.add('hidden');
+                    
+                    if (winColor === color) {
+                        const profit = Math.floor(bet * 0.35);
+                        await supabase.from('profiles').update({ coins: currentUser.coins + profit }).eq('username', currentUser.username);
+                        alert(`Landed on ${winColor.toUpperCase()}! You won ${profit} 🪙!`);
+                    } else alert(`Landed on ${winColor.toUpperCase()}! You lost ${bet} 🪙.`);
+                    isGameRunning = false;
+                }, 4000);
+            }
+
+            let selectedHorse = "";
+            document.querySelectorAll('.horse-btn').forEach(b => b.addEventListener('click', () => {
+                document.querySelectorAll('.horse-btn').forEach(x => x.classList.remove('selected'));
+                b.classList.add('selected'); selectedHorse = b.getAttribute('data-horse');
+            }));
+
+            document.getElementById('play-horse').addEventListener('click', async () => {
+                if(isGameRunning) return;
+                if(!selectedHorse) return alert("Select a horse!");
+                const bet = parseInt(document.getElementById('horse-bet').value);
+                if(isNaN(bet) || bet <= 0) return alert("Enter valid bet!");
+                if(currentUser.coins < bet) return alert("Not enough coins!");
+
+                isGameRunning = true;
+                document.getElementById('game-alert-title').innerText = '🐎'; document.getElementById('game-alert-desc').innerText = 'Racing...'; document.getElementById('game-alert-modal').classList.remove('hidden');
+                await supabase.from('profiles').update({ coins: currentUser.coins - bet }).eq('username', currentUser.username);
+
+                setTimeout(async () => {
+                    const horses =['Pilip', 'Krillip', 'Brillip', 'Drillip', 'Lrippip', 'Frillip'];
+                    const winner = horses[Math.floor(Math.random() * horses.length)];
+                    document.getElementById('game-alert-modal').classList.add('hidden');
+                    
+                    if (winner === selectedHorse) {
+                        const profit = bet * 5; 
+                        await supabase.from('profiles').update({ coins: currentUser.coins + profit }).eq('username', currentUser.username);
+                        alert(`🏇 ${winner} won the race! You won ${profit} 🪙!`);
+                    } else alert(`🏇 ${winner} won the race. Your horse lost!`);
+                    isGameRunning = false;
+                }, 6000);
+            });
+
+            // DASHBOARD STATS
             async function fetchStorageStats() {
                 if(!isAdminUnlocked) return;
                 const cats =['pictures', 'videos', 'audio', 'files', 'admin'];
@@ -1170,18 +1248,8 @@
                 document.getElementById('bar-files').style.width = `${((brk.files/1048576)/350)*100}%`;
             }
 
-            // --- EXPORT & IMPORT JSON ---
-            document.getElementById('feature-btn-export').onclick = async () => {
-                alert("Compiling JSON Backup..."); let exportData = {};
-                for(let cat of['pictures', 'videos', 'audio', 'files', 'admin']) { const {data} = await supabase.storage.from(BUCKET_NAME).list(cat, { limit: 1000 }); exportData[cat] = data ? data.filter(f => f.name !== '.emptyFolderPlaceholder') :[]; }
-                const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(exportData, null, 2)], {type: "application/json"})); a.download = `TF_Backup_${Date.now()}.json`; a.click();
-            };
-            document.getElementById('feature-btn-import').onclick = () => {
-                const i = document.createElement('input'); i.type = 'file'; i.accept = 'application/json';
-                i.onchange = e => { const r = new FileReader(); r.onload = ev => { try { JSON.parse(ev.target.result); alert("Metadata imported successfully."); } catch(err) { alert("Invalid JSON."); } }; r.readAsText(e.target.files[0]); }; i.click();
-            };
-
-            // --- GAMES RENDER ---
+            // Games
+            document.getElementById('close-game-btn').addEventListener('click', () => { document.getElementById('game-player-modal').classList.add('hidden'); document.getElementById('game-iframe').src=""; });
             function renderGamesUI() {
                 dom.gallery.innerHTML = ''; const games =[ { title: "Chainsaws Adventures", src: chainsawAdventuresSrc, color: "#ef4444" }, { title: "Jujubro's Fighting Kaisen", src: jujubroFightingSrc, color: "#3b82f6" } ];
                 for(let i=0; i<10; i++) {
@@ -1189,13 +1257,12 @@
                     const div = document.createElement('div'); div.className = 'media-item'; div.style.padding = "20px"; div.style.justifyContent="center"; div.style.alignItems="center";
                     if(g.type !== 'empty') {
                         div.style.borderColor = g.color; div.innerHTML = `<div style="font-size:3rem;">🕹️</div><h3 style="color:${g.color}; margin:10px 0;">${g.title}</h3><button class="btn-purple" style="background:${g.color}; border-color:#000;">Play</button>`;
-                        div.onclick = () => { document.getElementById('game-player-title').innerText = g.title; document.getElementById('game-iframe').src = g.src; document.getElementById('game-player-modal').classList.remove('hidden'); };
+                        div.addEventListener('click', () => { document.getElementById('game-player-title').innerText = g.title; document.getElementById('game-iframe').src = g.src; document.getElementById('game-player-modal').classList.remove('hidden'); });
                     } else div.innerHTML = `<div style="font-size:2rem; opacity:0.3;">📺</div><h3 style="color:var(--text-muted);">${g.title}</h3>`;
                     dom.gallery.appendChild(div);
                 }
             }
 
-            // Init load
             switchCategoryUI('pictures'); 
         });
     </script>
